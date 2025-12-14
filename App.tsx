@@ -48,6 +48,11 @@ import Notifications from './pages/librarian_pages/Notifications';
 import Requests from './pages/librarian_pages/Requests';
 import Settings from './pages/librarian_pages/Settings';
 
+// Error pages
+import ForbiddenPage from './pages/error_pages/ForbiddenPage';
+import MaintenancePage from './pages/error_pages/MaintenancePage';
+import NotFoundPage from './pages/error_pages/NotFoundPage';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{
   children: React.ReactNode;
@@ -188,7 +193,10 @@ const AppContent = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/service-terms" element={<ServiceTermsPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-        <Route path="*" element={<HomePage />} />
+        <Route path="/403" element={<ForbiddenPage />} />
+        <Route path="/500" element={<MaintenancePage />} />
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>
   );
