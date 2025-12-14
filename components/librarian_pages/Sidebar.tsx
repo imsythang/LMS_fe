@@ -146,13 +146,13 @@ const Sidebar = () => {
       <div className="p-4 border-t border-slate-200">
         <div className="flex items-center gap-3">
           <img
-            src="https://picsum.photos/40/40"
+            src="public/avatar/Avatar.JPG"
             alt="User"
             className="w-10 h-10 rounded-full border border-slate-200"
           />
           <div className="overflow-hidden">
             <p className="text-sm font-semibold text-slate-900 truncate">
-              Võ Quang Thắng
+              Hồ Sỹ Thắng
             </p>
             <p className="text-xs text-slate-500 truncate">Librarian Admin</p>
           </div>

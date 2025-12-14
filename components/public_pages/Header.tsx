@@ -1,5 +1,6 @@
 import { Bell, BookOpen, ChevronDown } from 'lucide-react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <div className="flex items-center gap-3 cursor-pointer">
+          <Link to="/" className="flex items-center gap-3 cursor-pointer">
             <div className="bg-primary-600 p-1.5 rounded-lg">
               <BookOpen className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
@@ -19,32 +20,35 @@ const Header: React.FC = () => {
                 AI-Powered Discovery
               </span>
             </div>
-          </div>
+          </Link>
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a
-              href="#"
+            <Link
+              to="/"
               className="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors"
             >
               Trang chủ
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/search"
               className="text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
             >
               Tìm kiếm
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/about"
               className="text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
             >
               Giới thiệu
-            </a>
-            <div className="relative group cursor-pointer flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors">
+            </Link>
+            <Link
+              to="/categories"
+              className="relative group cursor-pointer flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
+            >
               <span>Danh mục</span>
               <ChevronDown className="w-4 h-4" />
-            </div>
+            </Link>
           </nav>
 
           {/* Right Actions */}
@@ -56,12 +60,18 @@ const Header: React.FC = () => {
 
             <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
 
-            <button className="hidden sm:block text-sm font-medium text-gray-700 hover:text-gray-900 px-2">
+            <Link
+              to="/login"
+              className="hidden sm:block text-sm font-medium text-gray-700 hover:text-gray-900 px-2"
+            >
               Đăng nhập
-            </button>
-            <button className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-colors shadow-sm shadow-primary-500/30">
+            </Link>
+            <Link
+              to="/register"
+              className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-colors shadow-sm shadow-primary-500/30"
+            >
               Đăng ký
-            </button>
+            </Link>
           </div>
         </div>
       </div>

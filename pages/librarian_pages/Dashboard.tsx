@@ -13,7 +13,7 @@ const Dashboard = () => {
     <div className="p-8 max-w-7xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Tổng quan</h1>
-        <p className="text-slate-500">Chào mừng trở lại, Võ Quang Thắng</p>
+        <p className="text-slate-500">Chào mừng trở lại, Hồ Sỹ Thắng</p>
       </div>
 
       {/* Stats Cards */}

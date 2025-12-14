@@ -1,5 +1,6 @@
 import { AlertCircle, HelpCircle, Home, Lock, LogIn, Mail } from 'lucide-react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ForbiddenPage: React.FC = () => {
   return (
@@ -58,14 +59,18 @@ const ForbiddenPage: React.FC = () => {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
-            <button className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md shadow-blue-200">
-              <LogIn className="w-4 h-4" />
-              Đăng nhập với tài khoản khác
-            </button>
-            <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
-              <Home className="w-4 h-4" />
-              Về trang chủ
-            </button>
+            <Link to="/login">
+              <button className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md shadow-blue-200">
+                <LogIn className="w-4 h-4" />
+                Đăng nhập với tài khoản khác
+              </button>
+            </Link>
+            <Link to="/">
+              <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                <Home className="w-4 h-4" />
+                Về trang chủ
+              </button>
+            </Link>
           </div>
 
           {/* Footer Divider */}
@@ -76,7 +81,7 @@ const ForbiddenPage: React.FC = () => {
             <p className="text-sm text-gray-500 mb-3">Cần trợ giúp?</p>
             <div className="flex items-center justify-center gap-6">
               <a
-                href="#"
+                href="mailto:thang.hokhmtk22@hcmut.edu.vn"
                 className="flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
               >
                 <Mail className="w-4 h-4" />

@@ -7,6 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { LibrarianLayout } from './components/librarian_pages/LibrarianLayout';
+import { ErrorLayout } from './components/public_pages/ErrorLayout';
 import { Layout } from './components/public_pages/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ProtectedLayout } from './components/user_pages/Sidebar';
@@ -35,6 +36,7 @@ import MyBooksPage from './pages/user_pages/MyBooksPage';
 import NotificationsPage from './pages/user_pages/NotificationsPage';
 import ProfilePage from './pages/user_pages/ProfilePage';
 import ReservationsPage from './pages/user_pages/ReservationsPage';
+import SettingsPage from './pages/user_pages/SettingsPage';
 import WishlistPage from './pages/user_pages/WishlistPage';
 
 // Librarian pages
@@ -91,6 +93,7 @@ const AppContent = () => {
     '/reservations',
     '/fines',
     '/profile',
+    '/settings',
     '/wishlist',
     '/notifications',
   ];
@@ -111,6 +114,23 @@ const AppContent = () => {
   const isLibrarianPage = librarianPaths.some((path) =>
     location.pathname.startsWith(path)
   );
+
+  // List of error pages that use the error layout
+  const errorPaths = ['/403', '/404', '/500'];
+  const isErrorPage = errorPaths.includes(location.pathname);
+
+  // Error pages (403, 404, 500) - separate layout with Header only
+  if (isErrorPage) {
+    return (
+      <ErrorLayout>
+        <Routes>
+          <Route path="/403" element={<ForbiddenPage />} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="/500" element={<MaintenancePage />} />
+        </Routes>
+      </ErrorLayout>
+    );
+  }
 
   // Redirect if logged in user tries to access auth pages
   if (isAuthPage && userType) {
@@ -142,6 +162,7 @@ const AppContent = () => {
             <Route path="/reservations" element={<ReservationsPage />} />
             <Route path="/fines" element={<FinesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
           </Routes>
@@ -193,10 +214,7 @@ const AppContent = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/service-terms" element={<ServiceTermsPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-        <Route path="/403" element={<ForbiddenPage />} />
-        <Route path="/500" element={<MaintenancePage />} />
-        <Route path="/404" element={<NotFoundPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </Layout>
   );

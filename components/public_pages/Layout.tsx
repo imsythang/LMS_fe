@@ -250,7 +250,12 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail size={16} className="mr-2 flex-shrink-0" />
-                <span>library@hcmut.edu.vn</span>
+                <a
+                  href="mailto:thang.hokhmtk22@hcmut.edu.vn"
+                  className="hover:text-blue-400"
+                >
+                  thang.hokhmtk22@hcmut.edu.vn
+                </a>
               </li>
               <li className="flex items-center">
                 <Phone size={16} className="mr-2 flex-shrink-0" />

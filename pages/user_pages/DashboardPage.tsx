@@ -286,14 +286,33 @@ const DashboardPage = () => {
             đến hạn trả.
           </p>
           <div className="flex gap-3">
+            {/* 1. Nút Primary: Nổi bật, hiệu ứng nâng lên khi hover */}
             <Link to="/my-books">
-              <Button className="bg-white text-blue-700 hover:bg-white/90 border-none font-bold text-xs px-5 py-2">
+              <Button
+                className="
+        bg-white text-indigo-600
+        font-bold text-xs px-6 py-2.5
+        rounded-full shadow-lg shadow-indigo-900/20
+        transform transition-all duration-300
+        hover:-translate-y-1 hover:shadow-xl hover:bg-indigo-50
+        border-none
+      "
+              >
                 Xem ngay
               </Button>
             </Link>
+
+            {/* 2. Nút Secondary: Hiệu ứng kính (Glassmorphism), mờ ảo tinh tế */}
             <Button
               variant="outline"
-              className="text-white border-white/40 hover:bg-white/10 hover:border-white text-xs px-5 py-2"
+              className="
+      bg-white/10 backdrop-blur-sm
+      text-white border-white/20
+      font-medium text-xs px-6 py-2.5
+      rounded-full
+      transition-all duration-300
+      hover:bg-white/20 hover:border-white/50 hover:text-white
+    "
             >
               Gia hạn tất cả
             </Button>
@@ -403,15 +422,18 @@ const DashboardPage = () => {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
+            <a
+              href="mailto:thang.hokhmtk22@hcmut.edu.vn"
+              className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+            >
               <Mail size={16} className="text-slate-400 mt-0.5" />
               <div>
                 <p className="text-xs text-slate-500">Email</p>
                 <p className="text-sm font-bold text-slate-800">
-                  library@hcmut.edu.vn
+                  thang.hokhmtk22@hcmut.edu.vn
                 </p>
               </div>
-            </div>
+            </a>
             <div className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
               <Phone size={16} className="text-slate-400 mt-0.5" />
               <div>

@@ -22,11 +22,11 @@ const ProfilePage = () => {
           </Button>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input label="Họ tên" defaultValue="Võ Quang Thắng" />
-          <Input label="Email" defaultValue="lan.nguyen@hcmut.edu.vn" />
+          <Input label="Họ tên" defaultValue="Hồ Sỹ Thắng" />
+          <Input label="Email" defaultValue="thang.hokhmtk22@hcmut.edu.vn" />
           <Input
             label="Mã SV / GV"
-            defaultValue="2213214"
+            defaultValue="2213188"
             disabled
             className="bg-gray-50"
           />

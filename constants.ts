@@ -1,9 +1,9 @@
 import { Book, DashboardStat } from './types';
 
 export const CURRENT_USER = {
-  name: 'Võ Quang Thắng',
-  id: '2213214',
-  avatar: 'https://picsum.photos/id/64/200/200',
+  name: 'Hồ Sỹ Thắng',
+  id: '2213188',
+  avatar: 'public/avatar/Avatar.JPG',
   role: 'Student',
 };
 

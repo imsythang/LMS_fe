@@ -95,10 +95,13 @@ const MaintenancePage: React.FC = () => {
             Cần hỗ trợ khẩn cấp?
           </h4>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div className="flex items-center gap-2 text-gray-600">
+            <a
+              href="mailto:thang.hokhmtk22@hcmut.edu.vn"
+              className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors"
+            >
               <Mail className="w-4 h-4 text-primary-600" />
-              <span className="text-sm">library@hcmut.edu.vn</span>
-            </div>
+              <span className="text-sm">thang.hokhmtk22@hcmut.edu.vn</span>
+            </a>
             <div className="hidden sm:block text-gray-300">|</div>
             <div className="flex items-center gap-2 text-gray-600">
               <Phone className="w-4 h-4 text-primary-600" />

@@ -89,10 +89,10 @@ const ContactPage = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <a
-                      href="mailto:library@hcmut.edu.vn"
+                      href="mailto:thang.hokhmtk22@hcmut.edu.vn"
                       className="text-blue-600 hover:underline text-sm"
                     >
-                      library@hcmut.edu.vn
+                      thang.hokhmtk22@hcmut.edu.vn
                     </a>
                   </div>
                 </div>

@@ -91,7 +91,7 @@ const RegisterPage = () => {
 
               <Input
                 label="Mã sinh viên / Mã giảng viên *"
-                placeholder="2213214"
+                placeholder="2213188"
                 icon={<CreditCard size={18} />}
               />
 

@@ -134,7 +134,7 @@ const FAQPage = () => {
       items: [
         {
           q: 'Làm thế nào để liên hệ với thư viện?',
-          a: 'Bạn có thể liên hệ qua trang Liên hệ, gọi điện đến số +84 88 676 5392, hoặc gửi email đến library@hcmut.edu.vn. Thư viện mở cửa từ 8:00 - 20:00 các ngày trong tuần.',
+          a: 'Bạn có thể liên hệ qua trang Liên hệ, gọi điện đến số +84 88 676 5392, hoặc gửi email đến thang.hokhmtk22@hcmut.edu.vn. Thư viện mở cửa từ 8:00 - 20:00 các ngày trong tuần.',
         },
         {
           q: 'Tôi có thể đề xuất sách mới không?',

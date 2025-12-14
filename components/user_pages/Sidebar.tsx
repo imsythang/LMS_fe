@@ -73,13 +73,13 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
       {/* Sidebar */}
       <aside
         className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out flex flex-col
+        fixed lg:sticky top-0 h-screen left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out flex flex-col
         ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }
       `}
       >
-        <div className="h-16 flex items-center px-6 border-b border-gray-100">
+        <div className="h-16 flex items-center px-6 border-b border-gray-100 flex-shrink-0">
           <Link to="/dashboard" className="flex items-center">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white mr-2">
               <BookOpen size={20} />
@@ -142,8 +142,7 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             label="Phí phạt"
             active={isActive('/fines')}
           />
-
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-2">
             Cài đặt
           </div>
           <SidebarItem
@@ -152,39 +151,44 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             label="Thông tin cá nhân"
             active={isActive('/profile')}
           />
-          <SidebarItem to="#" icon={Settings} label="Cài đặt" active={false} />
+          <SidebarItem
+            to="/settings"
+            icon={Settings}
+            label="Cài đặt"
+            active={isActive('/settings')}
+          />
+        </div>
+
+        {/* User Mini Profile in Sidebar - Above Settings */}
+        <div className="p-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center mb-3">
+            <img
+              src="public/avatar/Avatar.JPG"
+              alt="User"
+              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+            />
+            <div className="ml-3 overflow-hidden flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                Hồ Sỹ Thắng
+              </p>
+              <p className="text-xs text-gray-500 truncate">2213188</p>
+            </div>
+          </div>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors mt-2"
+            className="w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
           >
             <LogOut size={20} className="mr-3" />
             Đăng xuất
           </button>
-        </div>
-
-        {/* User Mini Profile in Sidebar */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center">
-            <img
-              src="https://randomuser.me/api/portraits/men/32.jpg"
-              alt="User"
-              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
-            />
-            <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                Võ Quang Thắng
-              </p>
-              <p className="text-xs text-gray-500 truncate">2213214</p>
-            </div>
-          </div>
         </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header for Mobile/Notifications */}
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}

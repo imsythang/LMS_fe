@@ -230,10 +230,10 @@ const PrivacyPolicyPage = () => {
               <li>
                 Email:{' '}
                 <a
-                  href="mailto:library@hcmut.edu.vn"
+                  href="mailto:thang.hokhmtk22@hcmut.edu.vn"
                   className="text-blue-600 hover:underline"
                 >
-                  library@hcmut.edu.vn
+                  thang.hokhmtk22@hcmut.edu.vn
                 </a>
               </li>
               <li>
