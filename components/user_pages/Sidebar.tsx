@@ -1,0 +1,230 @@
+import {
+  Bell,
+  Book,
+  BookOpen,
+  Clock,
+  DollarSign,
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Search,
+  Settings,
+  User,
+} from 'lucide-react';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+
+const SidebarItem = ({ to, icon: Icon, label, active, count }: any) => (
+  <Link
+    to={to}
+    className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+      active
+        ? 'bg-blue-600 text-white shadow-md'
+        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    }`}
+  >
+    <div className="flex items-center">
+      <Icon
+        size={20}
+        className={`mr-3 ${active ? 'text-white' : 'text-gray-500'}`}
+      />
+      {label}
+    </div>
+    {count !== undefined && count > 0 && (
+      <span
+        className={`text-xs px-2 py-0.5 rounded-full ${
+          active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+        }`}
+      >
+        {count}
+      </span>
+    )}
+  </Link>
+);
+
+export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isSidebarOpen, setSidebarOpen] = React.useState(false);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out flex flex-col
+        ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }
+      `}
+      >
+        <div className="h-16 flex items-center px-6 border-b border-gray-100">
+          <Link to="/dashboard" className="flex items-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white mr-2">
+              <BookOpen size={20} />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 leading-none">
+                SmartLibrary
+              </h1>
+              <p className="text-[9px] text-gray-500 uppercase tracking-wider font-semibold">
+                AI-Powered
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        <div className="flex-grow p-4 space-y-1 overflow-y-auto">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-2">
+            Tổng quan
+          </div>
+          <SidebarItem
+            to="/dashboard"
+            icon={LayoutDashboard}
+            label="Dashboard"
+            active={isActive('/dashboard')}
+          />
+          <SidebarItem
+            to="/search"
+            icon={Search}
+            label="Tìm kiếm sách"
+            active={isActive('/search')}
+          />
+
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">
+            Quản lý cá nhân
+          </div>
+          <SidebarItem
+            to="/my-books"
+            icon={Book}
+            label="Sách đang mượn"
+            count={3}
+            active={isActive('/my-books')}
+          />
+          <SidebarItem
+            to="/reservations"
+            icon={Clock}
+            label="Đặt trước"
+            count={2}
+            active={isActive('/reservations')}
+          />
+          <SidebarItem
+            to="/wishlist"
+            icon={Heart}
+            label="Yêu thích"
+            count={8}
+            active={isActive('/wishlist')}
+          />
+          <SidebarItem
+            to="/fines"
+            icon={DollarSign}
+            label="Phí phạt"
+            active={isActive('/fines')}
+          />
+
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">
+            Cài đặt
+          </div>
+          <SidebarItem
+            to="/profile"
+            icon={User}
+            label="Thông tin cá nhân"
+            active={isActive('/profile')}
+          />
+          <SidebarItem to="#" icon={Settings} label="Cài đặt" active={false} />
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors mt-2"
+          >
+            <LogOut size={20} className="mr-3" />
+            Đăng xuất
+          </button>
+        </div>
+
+        {/* User Mini Profile in Sidebar */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center">
+            <img
+              src="https://randomuser.me/api/portraits/men/32.jpg"
+              alt="User"
+              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+            />
+            <div className="ml-3 overflow-hidden">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                Võ Quang Thắng
+              </p>
+              <p className="text-xs text-gray-500 truncate">2213214</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Header for Mobile/Notifications */}
+        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+          <div className="flex items-center">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 mr-2"
+            >
+              <Menu size={24} />
+            </button>
+            <h2 className="text-lg font-bold text-gray-800 lg:hidden">
+              Dashboard
+            </h2>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            {/* Search Bar - Hidden on small mobile */}
+            <div className="hidden md:flex relative">
+              <input
+                type="text"
+                placeholder="Tìm nhanh..."
+                className="pl-9 pr-4 py-1.5 rounded-full bg-gray-100 border-none text-sm focus:ring-2 focus:ring-blue-500 w-64"
+              />
+              <Search
+                size={16}
+                className="absolute left-3 top-2 text-gray-400"
+              />
+            </div>
+
+            <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
+
+            <Link
+              to="/notifications"
+              className="p-2 text-gray-400 hover:text-gray-600 relative rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </Link>
+          </div>
+        </header>
+
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</main>
+      </div>
+    </div>
+  );
+};
