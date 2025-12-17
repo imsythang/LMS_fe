@@ -9,84 +9,69 @@ import {
   Search,
   XCircle,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react';
 import { Copy } from '../../types';
+import axiosInstance from '../../api/axiosInstance';
+
+type ItemApi = {
+  id: number;
+  publicationId: number;
+  publicationTitle: string;
+  barcode: string;
+  status: 'AVAILABLE' | 'ON_LOAN' | 'LOST' | 'WITHDRAWN' | string;
+  itemType: 'PAPERBACK' | 'HARDCOVER' | 'EBOOK' | string;
+  location: string;
+  acquiredDate?: string;
+};
 
 const CopyList = () => {
-  const copies: Copy[] = [
-    {
-      barcode: 'ITM-2024-001523',
-      bookId: '1',
-      title: 'Machine Learning: A Comprehensive Guide',
-      location: 'Floor 3 - Section C - Shelf 12',
-      status: 'Available',
-      format: 'Print',
-      callNumber: '006.3',
-    },
-    {
-      barcode: 'ITM001235',
-      bookId: '2',
-      title: 'Deep Learning with Python',
-      location: 'Shelf A1-05',
-      status: 'On Loan',
-      format: 'Print',
-      callNumber: '006.3',
-    },
-    {
-      barcode: 'ITM001236',
-      bookId: '3',
-      title: 'Introduction to Algorithms',
-      location: 'Shelf B2-01',
-      status: 'Available',
-      format: 'Print',
-      callNumber: '005.1',
-    },
-    {
-      barcode: 'ITM001237',
-      bookId: '4',
-      title: 'Data Science Handbook',
-      location: 'Shelf A2-12',
-      status: 'Lost',
-      format: 'Print',
-      callNumber: '005.7',
-    },
-    {
-      barcode: 'EBOOK-2024-001',
-      bookId: '5',
-      title: 'Python for Data Analysis',
-      location: 'Online Access',
-      status: 'Available',
-      format: 'E-book',
-      callNumber: '005.13',
-    },
-    {
-      barcode: 'ITM001238',
-      bookId: '4',
-      title: 'Artificial Intelligence: A Modern Approach',
-      location: 'Shelf C1-08',
-      status: 'Withdrawn',
-      format: 'Print',
-      callNumber: '006.3',
-    },
-    {
-      barcode: 'ITM001239',
-      bookId: '2',
-      title: 'Neural Networks and Deep Learning',
-      location: 'Shelf A1-07',
-      status: 'On Loan',
-      format: 'Print',
-      callNumber: '006.3',
-    },
-    {
-      barcode: 'ITM001240',
-      bookId: '1',
-      title: 'Computer Vision: Algorithms and Applications',
-      location: 'Shelf B3-04',
-      status: 'Available',
-      format: 'Print',
-      callNumber: '006.37',
-    },
-  ];
+  const [copies, setCopies] = useState<Copy[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await axiosInstance.get('/items');
+        const list: ItemApi[] = res?.data ?? res ?? [];
+        const mapped: Copy[] = list.map((item) => ({
+          barcode: item.barcode,
+          bookId: String(item.publicationId),
+          title: item.publicationTitle,
+          location: item.location,
+          status:
+            item.status === 'AVAILABLE'
+              ? 'Available'
+              : item.status === 'ON_LOAN'
+              ? 'On Loan'
+              : item.status === 'LOST'
+              ? 'Lost'
+              : item.status === 'WITHDRAWN'
+              ? 'Withdrawn'
+              : item.status,
+          format: item.itemType === 'EBOOK' ? 'E-book' : 'Print',
+          callNumber: '',
+          // @ts-expect-error extend shape locally
+          copyId: String(item.id),
+        }));
+        setCopies(mapped);
+      } catch (err) {
+        console.error('Fetch items failed', err);
+        setError('Không tải được danh sách bản sao.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  const totalLabel = useMemo(
+    () => `Hiển thị ${copies.length} mục`,
+    [copies.length]
+  );
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
@@ -97,9 +82,12 @@ const CopyList = () => {
             Quản lý các tài liệu thư viện vật lý và kỹ thuật số
           </p>
         </div>
-        <button className="bg-secondary hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-colors">
+        <Link
+          to="/librarian/copies/new"
+          className="bg-secondary hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-colors"
+        >
           <Plus size={20} /> Thêm Bản Sao Mới
-        </button>
+        </Link>
       </div>
 
       {/* Filters */}
@@ -169,7 +157,7 @@ const CopyList = () => {
           <h3 className="font-semibold text-slate-700">
             Danh sách bản sao{' '}
             <span className="text-slate-400 font-normal text-sm ml-2">
-              Tổng cộng 1,247 bản sao
+              {loading ? 'Đang tải...' : `Tổng cộng ${copies.length} bản sao`}
             </span>
           </h3>
           <div className="flex gap-2">
@@ -194,48 +182,65 @@ const CopyList = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {copies.map((copy) => (
-              <tr
-                key={copy.barcode}
-                className="hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-6 py-4">
-                  <input type="checkbox" className="rounded border-gray-300" />
+            {loading && (
+              <tr>
+                <td colSpan={7} className="px-6 py-6 text-center text-slate-500">
+                  Đang tải danh sách bản sao...
                 </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2 font-mono text-slate-600">
-                    <span className="text-slate-300">||||</span>
-                    <Link
-                      to={`/librarian/copies/${copy.barcode}`}
-                      className="hover:text-blue-600 hover:underline"
-                    >
-                      {copy.barcode}
-                    </Link>
-                  </div>
+              </tr>
+            )}
+            {!loading && error && (
+              <tr>
+                <td colSpan={7} className="px-6 py-6 text-center text-red-600">
+                  {error}
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-slate-900">
-                    {copy.title}
-                  </div>
-                  <div className="text-xs text-slate-400">by Author Name</div>
+              </tr>
+            )}
+            {!loading && !error && copies.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-6 text-center text-slate-500">
+                  Chưa có bản sao nào.
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-slate-900">
-                    {copy.location.includes('Central Library')
-                      ? 'Central Library'
-                      : copy.location.includes('Branch')
-                      ? copy.location.split('Shelf')[0]
-                      : copy.location}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    {copy.location.includes('Shelf')
-                      ? copy.location.split('Library')[1] || copy.location
-                      : ''}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+              </tr>
+            )}
+            {!loading &&
+              !error &&
+              copies.map((copy: any) => (
+                <tr
+                  key={copy.copyId || copy.barcode}
+                  className="hover:bg-slate-50 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <input type="checkbox" className="rounded border-gray-300" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 font-mono text-slate-600">
+                      <span className="text-slate-300">||||</span>
+                      <Link
+                        to={`/librarian/copies/${copy.copyId || copy.barcode}`}
+                        className="hover:text-blue-600 hover:underline"
+                      >
+                        {copy.barcode}
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-slate-900">
+                      {copy.title}
+                    </div>
+                    <div className="text-xs text-slate-400">ID đầu sách: {copy.bookId}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-slate-900">
+                      {copy.location}
+                    </div>
+                    {copy.callNumber && (
+                      <div className="text-xs text-slate-500">{copy.callNumber}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
                     ${
                       copy.status === 'Available'
                         ? 'bg-green-100 text-green-700'
@@ -245,46 +250,46 @@ const CopyList = () => {
                         ? 'bg-red-100 text-red-700'
                         : 'bg-slate-100 text-slate-600'
                     }`}
-                  >
-                    {copy.status === 'Available' && (
-                      <CheckCircle size={12} className="fill-current" />
-                    )}
-                    {copy.status === 'On Loan' && (
-                      <Clock size={12} className="fill-current" />
-                    )}
-                    {copy.status === 'Lost' && (
-                      <XCircle size={12} className="fill-current" />
-                    )}
-                    {copy.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-600">
-                  {copy.format === 'E-book' ? (
-                    <span className="flex items-center gap-1 text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 text-xs">
-                      <Printer size={12} /> Ebook
-                    </span>
-                  ) : (
-                    'Print'
-                  )}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-3">
-                    <Link
-                      to={`/librarian/copies/${copy.barcode}`}
-                      className="text-blue-600 hover:text-blue-800"
                     >
-                      <Eye size={18} />
-                    </Link>
-                    <button className="text-orange-500 hover:text-orange-700">
-                      <AlertTriangle size={18} />
-                    </button>
-                    <button className="text-red-500 hover:text-red-700">
-                      <Printer size={18} className="rotate-45" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {copy.status === 'Available' && (
+                        <CheckCircle size={12} className="fill-current" />
+                      )}
+                      {copy.status === 'On Loan' && (
+                        <Clock size={12} className="fill-current" />
+                      )}
+                      {copy.status === 'Lost' && (
+                        <XCircle size={12} className="fill-current" />
+                      )}
+                      {copy.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {copy.format === 'E-book' ? (
+                      <span className="flex items-center gap-1 text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 text-xs">
+                        <Printer size={12} /> Ebook
+                      </span>
+                    ) : (
+                      'Print'
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-3">
+                      <Link
+                        to={`/librarian/copies/${copy.copyId || copy.barcode}`}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Eye size={18} />
+                      </Link>
+                      <button className="text-orange-500 hover:text-orange-700">
+                        <AlertTriangle size={18} />
+                      </button>
+                      <button className="text-red-500 hover:text-red-700">
+                        <Printer size={18} className="rotate-45" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         {/* Pagination */}
