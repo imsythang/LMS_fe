@@ -13,10 +13,285 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import Select from 'react-select';
+import publicationsService from '../../api/publicationsService';
+import categoriesService from '../../api/categoriesService';
+import publishersService from '../../api/publishersService';
+import authorsService from '../../api/authorsService';
+import tagsService from '../../api/tagsService';
+import { Publication, Publisher, Author, Category, Tag } from '../../api/publicationTypes';
+import axiosInstance from '../../api/axiosInstance';
+
+type FormState = {
+  title: string;
+  authors: { id: number | null; name: string }[];
+  isbn: string;
+  publisher: string;
+  publicationYear: string;
+  language: string;
+  edition: string;
+  size: string;
+  weight: string;
+  pages: string;
+  description: string;
+  categories: string[];
+  tags: string[];
+  coverImageUrl: string | null;
+  totalItems: number;
+  availableItems: number;
+};
+
+const emptyForm: FormState = {
+  title: '',
+  authors: [{ id: null, name: '' }],
+  isbn: '',
+  publisher: '',
+  publicationYear: '',
+  language: '',
+  edition: '',
+  size: '',
+  weight: '',
+  pages: '',
+  description: '',
+  categories: [],
+  tags: [],
+  coverImageUrl: null,
+  totalItems: 0,
+  availableItems: 0,
+};
 
 const BookDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const isCreate = !id || id === 'new';
+  const [loading, setLoading] = useState(!isCreate);
+  const [form, setForm] = useState<FormState>(emptyForm);
+
+  // New Data States
+  const [publishers, setPublishers] = useState<Publisher[]>([]);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  // Fetch dropdown data
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [pubRes, authRes, catRes, tagRes] = await Promise.all([
+          publishersService.getAllPublishers(),
+          authorsService.getAllAuthors(),
+          categoriesService.getAllCategories(),
+          tagsService.getAllTags()
+        ]);
+
+        if (pubRes.data) setPublishers(pubRes.data);
+        if (authRes.data) setAuthors(authRes.data);
+        if (catRes.data) setCategories(catRes.data);
+        if (tagRes.data) setTags(tagRes.data);
+      } catch (error) {
+        console.error("Error fetching dropdown data", error);
+      }
+    };
+    fetchDropdownData();
+  }, []);
+
+  // Fetch publication by id
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isCreate) return;
+      try {
+        setLoading(true);
+        const res = await publicationsService.getPublicationById(Number(id));
+        if (res.code === 200 && res.data) {
+          const pub: Publication = res.data;
+          setForm({
+            title: pub.title ?? '',
+            authors: pub.authors?.length
+              ? pub.authors.map((a) => ({ id: a.id, name: a.authorName }))
+              : [{ id: null, name: '' }],
+            isbn: pub.isbn ?? '',
+            publisher: pub.publisher?.publisherName ?? '',
+            publicationYear: pub.publicationYear?.toString() ?? '',
+            language: pub.language ?? '',
+            edition: pub.edition ?? '',
+            size: pub.size ?? '',
+            weight: pub.weight?.toString() ?? '',
+            pages: pub.numberOfPages?.toString() ?? '',
+            description: pub.description ?? '',
+            categories: pub.categories?.map((c) => c.categoryName) ?? [],
+            tags: pub.tags?.map((t) => t.tagName) ?? [],
+            coverImageUrl: pub.coverImageUrl ?? null,
+            totalItems: pub.totalItems ?? 0,
+            availableItems: pub.availableItems ?? 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching publication', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id, isCreate]);
+
+  const authorsList = useMemo(
+    () => (form.authors.length ? form.authors : [{ id: null, name: '' }]),
+    [form.authors]
+  );
+
+  const previewAuthors = useMemo(
+    () => {
+      const names = form.authors
+        .map((a) => a.name?.trim())
+        .filter((a) => a)
+        .join(', ');
+      return names || 'Chưa có tác giả';
+    },
+    [form.authors]
+  );
+
+  const updateAuthor = (idx: number, name: string, matchedId?: number | null) => {
+    setForm((prev) => {
+      const next = [...authorsList];
+      next[idx] = { id: matchedId ?? next[idx]?.id ?? null, name: name };
+      return { ...prev, authors: next };
+    });
+  };
+
+  const addAuthor = () => {
+    // Check if last author is selected and duplicate
+    const lastAuthor = authorsList[authorsList.length - 1];
+    if (lastAuthor && lastAuthor.id) {
+      // Check if this author id already exists in the list (except at the last position)
+      const isDuplicate = authorsList.slice(0, -1).some(a => a.id === lastAuthor.id);
+      if (isDuplicate) {
+        alert('Tác giả này đã có trong danh sách. Vui lòng chọn tác giả khác.');
+        return;
+      }
+    }
+    setForm((prev) => ({ ...prev, authors: [...authorsList, { id: null, name: '' }] }));
+  };
+
+  const removeAuthor = (idx: number) =>
+    setForm((prev) => {
+      const next = authorsList.filter((_, i) => i !== idx);
+      return { ...prev, authors: next.length ? next : [{ id: null, name: '' }] };
+    });
+
+  const handleSave = async () => {
+    const publisherId = publishers.find((p) => p.publisherName === form.publisher)?.id;
+    const authorIds = authorsList
+      .map((a) => a.id)
+      .filter((id): id is number => typeof id === 'number');
+    const categoryIds = form.categories
+      .map((name) => categories.find((c) => c.categoryName === name)?.id)
+      .filter((id): id is number => typeof id === 'number');
+    const tagIds = form.tags
+      .map((name) => tags.find((t) => t.tagName === name)?.id)
+      .filter((id): id is number => typeof id === 'number');
+
+    if (!form.title.trim()) {
+      alert('Tiêu đề không được để trống.');
+      return;
+    }
+    if (!publisherId) {
+      alert('Vui lòng chọn nhà xuất bản.');
+      return;
+    }
+    if (!authorIds.length) {
+      alert('Vui lòng chọn ít nhất 1 tác giả.');
+      return;
+    }
+
+    const numberOfPages = form.pages ? Number(form.pages) : undefined;
+    const publicationYear = form.publicationYear ? Number(form.publicationYear) : undefined;
+    const weight = form.weight ? Number(form.weight) : undefined;
+
+    const payload = {
+      title: form.title.trim(),
+      subtitle: '',
+      description: form.description || '',
+      language: form.language || '',
+      numberOfPages,
+      publicationYear,
+      edition: form.edition || '',
+      coverImageUrl: form.coverImageUrl || '',
+      size: form.size || '',
+      weight,
+      publisherId,
+      authorIds,
+      categoryIds,
+      tagIds,
+      isbn: form.isbn || '',
+    };
+
+    try {
+      setSaving(true);
+      if (isCreate) {
+        await axiosInstance.post('/publications', payload);
+        alert('Đã tạo ấn phẩm mới.');
+        setForm(emptyForm);
+        navigate('/librarian/books');
+      } else {
+        await publicationsService.updatePublication(Number(id), payload as any);
+        alert('Đã lưu thành công.');
+      }
+    } catch (error) {
+      console.error('Lỗi lưu ấn phẩm', error);
+      alert('Lưu thất bại. Vui lòng thử lại.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Styles for React Select
+  const selectStyles = {
+    control: (baseStyles: any) => ({
+      ...baseStyles,
+      borderColor: '#e2e8f0',
+      borderRadius: '0.5rem',
+      outline: 'none',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: '#cbd5e1',
+      },
+      '&:focus-within': {
+        borderColor: '#3b82f6',
+        boxShadow: '0 0 0 1px #3b82f6',
+      },
+      minHeight: '42px',
+      backgroundColor: '#ffffff',
+    }),
+    menu: (baseStyles: any) => ({
+      ...baseStyles,
+      borderRadius: '0.5rem',
+      zIndex: 9999,
+    }),
+    option: (baseStyles: any, state: any) => ({
+      ...baseStyles,
+      backgroundColor: state.isSelected ? '#bfdbfe' : state.isFocused ? '#f1f5f9' : undefined,
+      color: '#334155',
+      '&:active': {
+        backgroundColor: '#93c5fd',
+      },
+    }),
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-slate-600">Đang tải dữ liệu ấn phẩm...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
@@ -31,11 +306,11 @@ const BookDetails = () => {
           </Link>
           <div>
             <div className="text-sm text-slate-500 flex items-center gap-2">
-              Đầu sách <span className="text-slate-300">/</span> Machine
-              Learning cơ bản
+              Đầu sách <span className="text-slate-300">/</span>{' '}
+              {isCreate ? 'Thêm mới' : form.title || 'Đang tải'}
             </div>
             <h1 className="text-2xl font-bold text-slate-900">
-              Chi Tiết Đầu Sách
+              {isCreate ? 'Thêm đầu sách' : 'Chi Tiết Đầu Sách'}
             </h1>
           </div>
         </div>
@@ -76,7 +351,8 @@ const BookDetails = () => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="Machine Learning cơ bản: Lý thuyết và thực hành với Python"
+                  value={form.title}
+                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900"
                 />
                 <p className="text-xs text-slate-400 mt-1">
@@ -94,31 +370,57 @@ const BookDetails = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Tác giả <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      defaultValue="Nguyễn Văn A"
-                      className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-50"
-                    />
-                    <button className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      defaultValue="Trần Thị B"
-                      className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-50"
-                    />
-                    <button className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  <button className="text-secondary text-sm font-medium flex items-center gap-1 hover:underline">
+                  {authorsList.map((author, idx) => {
+                    const selectedIds = authorsList
+                      .map((a) => a.id)
+                      .filter((id): id is number => id !== null && id !== undefined);
+                    const availableOptions = authors
+                      .filter((a) => !selectedIds.includes(a.id) || a.id === author.id)
+                      .map((a) => ({ value: a.id, label: a.authorName }));
+
+                    return (
+                      <div className="flex gap-2" key={idx}>
+                        <div className="flex-1">
+                          <Select
+                            options={availableOptions}
+                            value={
+                              author.name
+                                ? { value: author.id || 0, label: author.name }
+                                : null
+                            }
+                            onChange={(option) =>
+                              updateAuthor(idx, option?.label || '', option?.value)
+                            }
+                            isSearchable
+                            placeholder="Chọn tác giả"
+                            styles={selectStyles}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (authorsList.length <= 1) {
+                              alert('Không thể xóa tác giả. Phải có ít nhất 1 tác giả.');
+                              return;
+                            }
+                            removeAuthor(idx);
+                          }}
+                          className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={addAuthor}
+                    className="text-secondary text-sm font-medium flex items-center gap-1 hover:underline"
+                  >
                     <Plus size={16} /> Add Another Author
                   </button>
                 </div>
@@ -131,30 +433,42 @@ const BookDetails = () => {
                   </label>
                   <input
                     type="text"
-                    defaultValue="978-604-2-25789-4"
+                    value={form.isbn}
+                    onChange={(e) => setForm((prev) => ({ ...prev, isbn: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    ISSN
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Optional for periodicals"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
                     Nhà xuất bản <span className="text-red-500">*</span>
                   </label>
+                  <Select
+                    options={publishers.map(p => ({ value: p.id, label: p.publisherName }))}
+                    value={
+                      publishers.find(p => p.publisherName === form.publisher)
+                        ? { value: publishers.find(p => p.publisherName === form.publisher)!.id, label: form.publisher }
+                        : form.publisher
+                          ? { value: 0, label: form.publisher }
+                          : null
+                    }
+                    onChange={(option) => setForm(prev => ({ ...prev, publisher: option?.label || '' }))}
+                    isSearchable
+                    isClearable
+                    placeholder="Chọn nhà xuất bản"
+                    styles={selectStyles}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+              <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Số trang
+                  </label>
                   <input
-                    type="text"
-                    defaultValue="Nhà xuất bản Đại học Quốc gia"
+                    type="number"
+                    value={form.pages}
+                    onChange={(e) => setForm((prev) => ({ ...prev, pages: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
@@ -164,39 +478,59 @@ const BookDetails = () => {
                   </label>
                   <input
                     type="number"
-                    defaultValue="2023"
+                    value={form.publicationYear}
+                    onChange={(e) => setForm((prev) => ({ ...prev, publicationYear: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Ngôn ngữ <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={form.language}
+                    onChange={(e) => setForm((prev) => ({ ...prev, language: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+                  >
+                    <option value="">Chọn ngôn ngữ</option>
+                    <option value="Vietnamese">Tiếng Việt</option>
+                    <option value="English">English</option>
+                  </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Ngôn ngữ
-                  </label>
-                  <select className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
-                    <option>Tiếng Việt</option>
-                    <option>English</option>
-                  </select>
-                </div>
+                
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
                     Tái bản
                   </label>
                   <input
                     type="text"
-                    defaultValue="2nd Edition"
+                    value={form.edition}
+                    onChange={(e) => setForm((prev) => ({ ...prev, edition: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Số trang
+                    Kích cỡ (cm)
+                  </label>
+                  <input
+                    type="text"
+                    value={form.size}
+                    onChange={(e) => setForm((prev) => ({ ...prev, size: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Khối lượng (g)
                   </label>
                   <input
                     type="number"
-                    defaultValue="456"
+                    value={form.weight}
+                    onChange={(e) => setForm((prev) => ({ ...prev, weight: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
@@ -209,45 +543,49 @@ const BookDetails = () => {
                 <textarea
                   rows={5}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                  defaultValue="Cuốn sách cung cấp kiến thức toàn diện về Machine Learning, từ các khái niệm cơ bản đến các thuật toán nâng cao. Nội dung được trình bày rõ ràng với nhiều ví dụ thực tế và bài tập thực hành sử dụng Python. Phù hợp cho sinh viên ngành Công nghệ thông tin, Khoa học dữ liệu và những người mới bắt đầu tìm hiểu về Machine Learning."
+                  value={form.description}
+                  onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Tags <span className="text-red-500">*</span>
+                  Danh mục
                 </label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {[
-                    'Machine Learning',
-                    'Python',
-                    'Artificial Intelligence',
-                    'Data Science',
-                    'Deep Learning',
-                  ].map((tag, i) => (
-                    <span
-                      key={i}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 cursor-pointer hover:opacity-80
-                      ${
-                        i === 4
-                          ? 'bg-orange-100 text-orange-600'
-                          : 'bg-indigo-50 text-indigo-600'
-                      }`}
-                    >
-                      {tag} <X size={12} />
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Thêm tag mới"
-                    className="flex-1 px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500"
-                  />
-                  <button className="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 flex items-center gap-2">
-                    <Plus size={16} /> Thêm
-                  </button>
-                </div>
+                <Select
+                  isMulti
+                  options={categories.map(c => ({ value: c.id, label: c.categoryName }))}
+                  value={form.categories.map(catName => {
+                    const cat = categories.find(c => c.categoryName === catName);
+                    return cat ? { value: cat.id, label: cat.categoryName } : { value: 0, label: catName };
+                  })}
+                  onChange={(options) => {
+                     const selectedNames = options.map(o => o.label);
+                     setForm(prev => ({ ...prev, categories: selectedNames }));
+                  }}
+                  placeholder="Chọn danh mục"
+                  styles={selectStyles}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Tags
+                </label>
+                <Select
+                  isMulti
+                  options={tags.map(t => ({ value: t.id, label: t.tagName }))}
+                  value={form.tags.map(tagName => {
+                    const tag = tags.find(t => t.tagName === tagName);
+                    return tag ? { value: tag.id, label: tag.tagName } : { value: 0, label: tagName };
+                  })}
+                  onChange={(options) => {
+                     const selectedNames = options.map(o => o.label);
+                     setForm(prev => ({ ...prev, tags: selectedNames }));
+                  }}
+                  placeholder="Chọn tags"
+                  styles={selectStyles}
+                />
               </div>
             </div>
 
@@ -261,8 +599,12 @@ const BookDetails = () => {
                 <button className="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-medium rounded-lg hover:bg-slate-100 flex items-center gap-2">
                   <RotateCcw size={16} /> Reset
                 </button>
-                <button className="px-6 py-2 bg-secondary text-white font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-2">
-                  <Save size={16} /> Lưu
+                <button
+                  className="px-6 py-2 bg-secondary text-white font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu'}
                 </button>
               </div>
             </div>
@@ -347,8 +689,32 @@ const BookDetails = () => {
                   Xóa vĩnh viễn ấn phẩm này và tất cả các mục liên quan. Hành
                   động này không thể hoàn tác.
                 </p>
-                <button className="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-2 hover:bg-red-700">
-                  <Trash2 size={16} /> Xoá ấn phẩm
+                <button
+                  className="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-2 hover:bg-red-700 disabled:opacity-70 disabled:cursor-not-allowed"
+                  onClick={async () => {
+                    if (isCreate) {
+                      alert('Ấn phẩm chưa được lưu, không có gì để xoá.');
+                      return;
+                    }
+                    const confirmed = window.confirm(
+                      'Bạn chắc chắn muốn xoá ấn phẩm này? Hành động không thể hoàn tác.'
+                    );
+                    if (!confirmed) return;
+                    try {
+                      setSaving(true);
+                      await publicationsService.deletePublication(Number(id));
+                      alert('Đã xoá ấn phẩm.');
+                      navigate('/librarian/books');
+                    } catch (error) {
+                      console.error('Lỗi xoá ấn phẩm', error);
+                      alert('Xoá thất bại. Vui lòng thử lại.');
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  disabled={saving}
+                >
+                  <Trash2 size={16} /> {saving ? 'Đang xoá...' : 'Xóa ấn phẩm'}
                 </button>
               </div>
             </div>
@@ -363,28 +729,33 @@ const BookDetails = () => {
               <span className="text-white font-semibold">Xem Trước</span>
             </div>
             <div className="p-6 flex flex-col items-center text-center">
-              <div className="w-48 h-64 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-2xl mb-6 flex items-center justify-center text-white text-opacity-20">
-                {/* Simulated Book Cover */}
-                <div className="w-full h-full p-4 relative flex flex-col justify-between">
-                  <div className="text-2xl font-bold text-white tracking-widest opacity-90 border-b-2 border-white pb-2 mb-2">
-                    MACHINE
-                    <br />
-                    LEARNING
+              <div className="w-48 h-64 rounded-lg shadow-2xl mb-6 overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                {form.coverImageUrl ? (
+                  <img
+                    src={form.coverImageUrl}
+                    alt={form.title || 'Book cover'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full p-4 relative flex flex-col justify-between text-white text-opacity-90">
+                    <div className="text-2xl font-bold tracking-widest border-b-2 border-white pb-2 mb-2 line-clamp-3">
+                      {form.title || 'Chưa có tiêu đề'}
+                    </div>
+                    <div className="text-xs opacity-80 line-clamp-2">
+                      {form.publisher || 'Chưa có NXB'}
+                    </div>
+                    <div className="mt-auto text-xs font-mono opacity-70">
+                      {form.publicationYear || '----'}
+                    </div>
                   </div>
-                  <div className="text-xs text-white opacity-70">
-                    A Probabilistic Perspective
-                  </div>
-                  <div className="mt-auto text-xs font-mono opacity-50">
-                    MIT PRESS
-                  </div>
-                </div>
+                )}
               </div>
 
               <h3 className="text-xl font-bold text-white mb-1">
-                Machine Learning cơ bản
+                {form.title || 'Chưa có tiêu đề'}
               </h3>
               <p className="text-slate-400 text-sm mb-3">
-                Nguyễn Văn A, Trần Thị B • 2023
+                {previewAuthors} • {form.publicationYear || 'N/A'}
               </p>
 
               <div className="flex items-center gap-1 mb-6">
@@ -407,15 +778,15 @@ const BookDetails = () => {
               <div className="w-full space-y-2 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Available:</span>
-                  <span className="text-green-400 font-medium">5 bản sao</span>
+                  <span className="text-green-400 font-medium">{form.availableItems} bản sao</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">On Loan:</span>
-                  <span className="text-yellow-400 font-medium">3 bản sao</span>
+                  <span className="text-yellow-400 font-medium">0 bản sao</span>
                 </div>
                 <div className="flex justify-between text-sm pt-2 border-t border-slate-700">
                   <span className="text-white">Total:</span>
-                  <span className="text-white font-medium">10 bản sao</span>
+                  <span className="text-white font-medium">{form.totalItems} bản sao</span>
                 </div>
               </div>
 

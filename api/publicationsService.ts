@@ -35,8 +35,20 @@ const publicationsService = {
       queryParams.append('keyword', params.keyword);
     }
 
+    if (params?.categoryId) {
+      queryParams.append('categoryId', params.categoryId.toString());
+    }
+
     if (params?.sortBy) {
       queryParams.append('sortBy', params.sortBy);
+    }
+
+    if (params?.year) {
+      queryParams.append('year', params.year.toString());
+    }
+
+    if (params?.availability) {
+      queryParams.append('availability', params.availability);
     }
 
     if (params?.direction) {

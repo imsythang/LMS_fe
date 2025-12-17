@@ -84,9 +84,15 @@ export interface PaginatedPublications {
   last: boolean;
 }
 
+// Availability filter enum matching backend
+export type AvailabilityFilter = 'ALL' | 'HAS_ITEMS' | 'NO_ITEMS';
+
 // Query parameters for getting publications
 export interface GetPublicationsParams {
   keyword?: string;
+  categoryId?: number;
+  year?: number;
+  availability?: AvailabilityFilter;
   sortBy?: 'createdAt' | 'title' | 'publicationYear' | 'updatedAt';
   direction?: 'ASC' | 'DESC';
   page?: number;

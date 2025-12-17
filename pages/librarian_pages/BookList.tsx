@@ -2,8 +2,10 @@ import { Edit2, Eye, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import publicationsService from '../../api/publicationsService';
-import { Publication } from '../../api/publicationTypes';
+import { Publication, Category, AvailabilityFilter } from '../../api/publicationTypes';
 import { Book } from '../../types';
+import categoriesService from '../../api/categoriesService';
+import Select from 'react-select';
 
 const BookList = () => {
   // State cho data
@@ -17,16 +19,43 @@ const BookList = () => {
   // State cho search & filters
   const [searchInput, setSearchInput] = useState(''); // Input tạm
   const [keyword, setKeyword] = useState(''); // Keyword thực tế gửi lên API
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  // State cho year filter
+  const [yearFilterMode, setYearFilterMode] = useState<'all' | 'custom'>('all');
   const [selectedYear, setSelectedYear] = useState('');
-  const [hasItems, setHasItems] = useState(false);
-  const [noItems, setNoItems] = useState(false);
+  const [appliedYear, setAppliedYear] = useState<number | undefined>(undefined);
+
+  // State cho availability filter
+  const [availability, setAvailability] = useState<AvailabilityFilter>('ALL');
+
+  // State cho categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // State cho pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  // Fetch categories từ API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const response = await categoriesService.getAllCategories();
+        if (response.code === 200 && response.data) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Fetch data từ API
   useEffect(() => {
@@ -35,6 +64,9 @@ const BookList = () => {
         setLoading(true);
         const response = await publicationsService.getAllPublications({
           keyword: keyword || undefined,
+          categoryId: selectedCategory || undefined,
+          year: yearFilterMode === 'custom' ? appliedYear : undefined,
+          availability: availability !== 'ALL' ? availability : undefined,
           sortBy,
           direction,
           page: currentPage,
@@ -68,7 +100,7 @@ const BookList = () => {
     };
 
     fetchBooks();
-  }, [keyword, sortBy, direction, currentPage, pageSize]);
+  }, [keyword, selectedCategory, yearFilterMode, appliedYear, availability, sortBy, direction, currentPage, pageSize]);
 
   // Handler để toggle sort khi click header
   const handleSort = (field: 'title' | 'publicationYear') => {
@@ -86,6 +118,11 @@ const BookList = () => {
   // Handler cho nút "Áp dụng"
   const handleApplyFilters = () => {
     setKeyword(searchInput);
+    if (yearFilterMode === 'custom' && selectedYear && !isNaN(parseInt(selectedYear, 10))) {
+      setAppliedYear(parseInt(selectedYear, 10));
+    } else {
+      setAppliedYear(undefined);
+    }
     setCurrentPage(0); // Reset về trang đầu khi search
     // TODO: Apply category, year, hasItems, noItems filters khi API hỗ trợ
   };
@@ -94,10 +131,11 @@ const BookList = () => {
   const handleClearFilters = () => {
     setSearchInput('');
     setKeyword('');
-    setSelectedCategory('');
+    setSelectedCategory(null);
+    setYearFilterMode('all');
     setSelectedYear('');
-    setHasItems(false);
-    setNoItems(false);
+    setAppliedYear(undefined);
+    setAvailability('ALL');
     setSortBy('createdAt');
     setDirection('DESC');
     setCurrentPage(0);
@@ -142,9 +180,12 @@ const BookList = () => {
             Manage library publications and catalog
           </p>
         </div>
-        <button className="bg-secondary hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-colors">
+        <Link
+          to="/librarian/books/new"
+          className="bg-secondary hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-colors"
+        >
           <Plus size={20} /> Thêm đầu sách mới
-        </button>
+        </Link>
       </div>
 
       {/* Filters */}
@@ -173,51 +214,122 @@ const BookList = () => {
             <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
               Chủ đề
             </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
-            >
-              <option value="">Tất cả chủ đề</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Data Science">Data Science</option>
-            </select>
+            <Select
+              options={[
+                { value: null, label: 'Tất cả chủ đề' },
+                ...categories.map(cat => ({ value: cat.id, label: cat.categoryName }))
+              ]}
+              value={
+                selectedCategory === null
+                  ? { value: null, label: 'Tất cả chủ đề' }
+                  : categories.find(cat => cat.id === selectedCategory)
+                    ? { value: selectedCategory, label: categories.find(cat => cat.id === selectedCategory)?.categoryName || '' }
+                    : { value: null, label: 'Tất cả chủ đề' }
+              }
+              onChange={(option) => {
+                setSelectedCategory(option?.value ?? null);
+              }}
+              isLoading={categoriesLoading}
+              isClearable={true}
+              placeholder="Chọn chủ đề..."
+              className="text-sm"
+              classNamePrefix="react-select"
+              styles={{
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  borderColor: '#e2e8f0',
+                  borderRadius: '0.5rem',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    borderColor: '#cbd5e1',
+                  },
+                  '&:focus-within': {
+                    borderColor: '#3b82f6',
+                    boxShadow: '0 0 0 1px #3b82f6',
+                  },
+                  minHeight: '42px',
+                  backgroundColor: '#ffffff',
+                }),
+                menu: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: '0.5rem',
+                  zIndex: 9999,
+                }),
+                option: (baseStyles, state) => ({
+                  ...baseStyles,
+                  backgroundColor: state.isSelected ? '#bfdbfe' : state.isFocused ? '#f1f5f9' : undefined,
+                  color: '#334155',
+                  '&:active': {
+                    backgroundColor: '#93c5fd',
+                  },
+                }),
+              }}
+            />
           </div>
           <div>
             <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Năm
+              Năm xuất bản
             </label>
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
-            >
-              <option value="">Tất cả năm</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={yearFilterMode}
+                onChange={(e) => {
+                  setYearFilterMode(e.target.value as 'all' | 'custom');
+                  if (e.target.value === 'all') {
+                    setSelectedYear('');
+                    setAppliedYear(undefined);
+                  }
+                }}
+                className="px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
+              >
+                <option value="all">Tất cả năm</option>
+                <option value="custom">Nhập năm</option>
+              </select>
+              {yearFilterMode === 'custom' && (
+                <input
+                  type="number"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  placeholder="VD: 2023"
+                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
+                  min="1000"
+                  max={new Date().getFullYear()}
+                  onKeyDown={handleKeyDown}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div className="mt-4 flex justify-between items-center border-t border-slate-100 pt-4">
           <div className="flex gap-4">
             <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
               <input
-                type="checkbox"
-                checked={hasItems}
-                onChange={(e) => setHasItems(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                type="radio"
+                name="availability"
+                checked={availability === 'ALL'}
+                onChange={() => setAvailability('ALL')}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              Tất cả
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+              <input
+                type="radio"
+                name="availability"
+                checked={availability === 'HAS_ITEMS'}
+                onChange={() => setAvailability('HAS_ITEMS')}
+                className="text-blue-600 focus:ring-blue-500"
               />
               Có Items
             </label>
             <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
               <input
-                type="checkbox"
-                checked={noItems}
-                onChange={(e) => setNoItems(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                type="radio"
+                name="availability"
+                checked={availability === 'NO_ITEMS'}
+                onChange={() => setAvailability('NO_ITEMS')}
+                className="text-blue-600 focus:ring-blue-500"
               />
               Không có Items
             </label>
@@ -291,8 +403,9 @@ const BookList = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-start gap-4">
-                      <div
-                        className={`w-10 h-14 rounded shadow-sm flex-shrink-0 ${
+                      <Link
+                        to={`/librarian/books/${book.id}`}
+                        className={`w-10 h-14 rounded shadow-sm flex-shrink-0 block ${
                           [
                             'bg-blue-500',
                             'bg-green-500',
@@ -301,7 +414,7 @@ const BookList = () => {
                             'bg-cyan-500',
                           ][parseInt(book.id) % 5]
                         }`}
-                      ></div>
+                      ></Link>
                       <div>
                         <Link
                           to={`/librarian/books/${book.id}`}
