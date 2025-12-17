@@ -176,7 +176,7 @@ const PrivacyPolicyPage = () => {
                 Chúng tôi sử dụng cookie và công nghệ tương tự để cải thiện trải
                 nghiệm của bạn. Xem thêm chi tiết tại{' '}
                 <a
-                  href="/cookie-policy"
+                  href="/publicpage/cookie-policy"
                   className="text-blue-600 hover:underline"
                 >
                   Chính sách Cookie

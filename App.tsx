@@ -24,7 +24,7 @@ import HomePage from './pages/public_pages/HomePage';
 import LoginPage from './pages/public_pages/LoginPage';
 import PrivacyPolicyPage from './pages/public_pages/PrivacyPolicyPage';
 import RegisterPage from './pages/public_pages/RegisterPage';
-import SearchPage from './pages/public_pages/SearchPage';
+import PublicSearchPage from './pages/public_pages/SearchPage';
 import ServiceTermsPage from './pages/public_pages/ServiceTermsPage';
 import TermsPage from './pages/public_pages/TermsPage';
 import UserGuidePage from './pages/public_pages/UserGuidePage';
@@ -36,6 +36,7 @@ import MyBooksPage from './pages/user_pages/MyBooksPage';
 import NotificationsPage from './pages/user_pages/NotificationsPage';
 import ProfilePage from './pages/user_pages/ProfilePage';
 import ReservationsPage from './pages/user_pages/ReservationsPage';
+import UserSearchPage from './pages/user_pages/SearchPage';
 import SettingsPage from './pages/user_pages/SettingsPage';
 import WishlistPage from './pages/user_pages/WishlistPage';
 
@@ -55,6 +56,10 @@ import ForbiddenPage from './pages/error_pages/ForbiddenPage';
 import MaintenancePage from './pages/error_pages/MaintenancePage';
 import NotFoundPage from './pages/error_pages/NotFoundPage';
 
+const PUBLIC_PREFIX = '/publicpage';
+const USER_PREFIX = '/userpage';
+const LIB_PREFIX = '/librarianpage';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{
   children: React.ReactNode;
@@ -63,15 +68,15 @@ const ProtectedRoute: React.FC<{
   const { userType } = useAuth();
 
   if (!userType) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={`${PUBLIC_PREFIX}/login`} replace />;
   }
 
   if (allowedUserType !== 'both' && userType !== allowedUserType) {
     // Redirect to appropriate dashboard
     if (userType === 'student') {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to={`${USER_PREFIX}/dashboard`} replace />;
     } else {
-      return <Navigate to="/librarian/dashboard" replace />;
+      return <Navigate to={`${LIB_PREFIX}/dashboard`} replace />;
     }
   }
 
@@ -83,19 +88,57 @@ const AppContent = () => {
   const location = useLocation();
   const { userType } = useAuth();
 
+  const legacyRedirects: Record<string, string> = {
+    '/': `${PUBLIC_PREFIX}`,
+    '/login': `${PUBLIC_PREFIX}/login`,
+    '/register': `${PUBLIC_PREFIX}/register`,
+    '/dashboard': `${USER_PREFIX}/dashboard`,
+    '/search': `${USER_PREFIX}/search`,
+    '/my-books': `${USER_PREFIX}/my-books`,
+    '/reservations': `${USER_PREFIX}/reservations`,
+    '/fines': `${USER_PREFIX}/fines`,
+    '/profile': `${USER_PREFIX}/profile`,
+    '/settings': `${USER_PREFIX}/settings`,
+    '/wishlist': `${USER_PREFIX}/wishlist`,
+    '/notifications': `${USER_PREFIX}/notifications`,
+    '/librarian/dashboard': `${LIB_PREFIX}/dashboard`,
+    '/librarian/circulation': `${LIB_PREFIX}/circulation`,
+    '/librarian/books': `${LIB_PREFIX}/books`,
+    '/librarian/copies': `${LIB_PREFIX}/copies`,
+    '/librarian/requests': `${LIB_PREFIX}/requests`,
+    '/librarian/settings': `${LIB_PREFIX}/settings`,
+    '/librarian/notifications': `${LIB_PREFIX}/notifications`,
+    '/about': `${PUBLIC_PREFIX}/about`,
+    '/guide': `${PUBLIC_PREFIX}/guide`,
+    '/faq': `${PUBLIC_PREFIX}/faq`,
+    '/contact': `${PUBLIC_PREFIX}/contact`,
+    '/terms': `${PUBLIC_PREFIX}/terms`,
+    '/categories': `${PUBLIC_PREFIX}/categories`,
+    '/privacy-policy': `${PUBLIC_PREFIX}/privacy-policy`,
+    '/service-terms': `${PUBLIC_PREFIX}/service-terms`,
+    '/cookie-policy': `${PUBLIC_PREFIX}/cookie-policy`,
+  };
+
+  if (legacyRedirects[location.pathname]) {
+    return <Navigate to={legacyRedirects[location.pathname]} replace />;
+  }
+
   const isAuthPage =
-    location.pathname === '/login' || location.pathname === '/register';
+    location.pathname === `${PUBLIC_PREFIX}/login` ||
+    location.pathname === `${PUBLIC_PREFIX}/register`;
 
   // List of paths that use the user protected layout
   const userProtectedPaths = [
-    '/dashboard',
-    '/my-books',
-    '/reservations',
-    '/fines',
-    '/profile',
-    '/settings',
-    '/wishlist',
-    '/notifications',
+    `${USER_PREFIX}/dashboard`,
+    `${USER_PREFIX}/search`,
+    `${USER_PREFIX}/book`,
+    `${USER_PREFIX}/my-books`,
+    `${USER_PREFIX}/reservations`,
+    `${USER_PREFIX}/fines`,
+    `${USER_PREFIX}/profile`,
+    `${USER_PREFIX}/settings`,
+    `${USER_PREFIX}/wishlist`,
+    `${USER_PREFIX}/notifications`,
   ];
   const isUserProtectedPage = userProtectedPaths.some((path) =>
     location.pathname.startsWith(path)
@@ -103,13 +146,13 @@ const AppContent = () => {
 
   // List of paths that use the librarian layout
   const librarianPaths = [
-    '/librarian/dashboard',
-    '/librarian/circulation',
-    '/librarian/books',
-    '/librarian/copies',
-    '/librarian/requests',
-    '/librarian/settings',
-    '/librarian/notifications',
+    `${LIB_PREFIX}/dashboard`,
+    `${LIB_PREFIX}/circulation`,
+    `${LIB_PREFIX}/books`,
+    `${LIB_PREFIX}/copies`,
+    `${LIB_PREFIX}/requests`,
+    `${LIB_PREFIX}/settings`,
+    `${LIB_PREFIX}/notifications`,
   ];
   const isLibrarianPage = librarianPaths.some((path) =>
     location.pathname.startsWith(path)
@@ -135,9 +178,9 @@ const AppContent = () => {
   // Redirect if logged in user tries to access auth pages
   if (isAuthPage && userType) {
     if (userType === 'librarian') {
-      return <Navigate to="/librarian/dashboard" replace />;
+      return <Navigate to={`${LIB_PREFIX}/dashboard`} replace />;
     } else {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to={`${USER_PREFIX}/dashboard`} replace />;
     }
   }
 
@@ -145,8 +188,8 @@ const AppContent = () => {
   if (isAuthPage) {
     return (
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path={`${PUBLIC_PREFIX}/login`} element={<LoginPage />} />
+        <Route path={`${PUBLIC_PREFIX}/register`} element={<RegisterPage />} />
       </Routes>
     );
   }
@@ -157,14 +200,37 @@ const AppContent = () => {
       <ProtectedRoute allowedUserType="student">
         <ProtectedLayout>
           <Routes>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/my-books" element={<MyBooksPage />} />
-            <Route path="/reservations" element={<ReservationsPage />} />
-            <Route path="/fines" element={<FinesPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route
+              path={`${USER_PREFIX}/dashboard`}
+              element={<DashboardPage />}
+            />
+            <Route
+              path={`${USER_PREFIX}/search`}
+              element={<UserSearchPage />}
+            />
+            <Route
+              path={`${USER_PREFIX}/book/:id`}
+              element={<BookDetailPage />}
+            />
+            <Route path={`${USER_PREFIX}/my-books`} element={<MyBooksPage />} />
+            <Route
+              path={`${USER_PREFIX}/reservations`}
+              element={<ReservationsPage />}
+            />
+            <Route path={`${USER_PREFIX}/fines`} element={<FinesPage />} />
+            <Route path={`${USER_PREFIX}/profile`} element={<ProfilePage />} />
+            <Route
+              path={`${USER_PREFIX}/settings`}
+              element={<SettingsPage />}
+            />
+            <Route
+              path={`${USER_PREFIX}/wishlist`}
+              element={<WishlistPage />}
+            />
+            <Route
+              path={`${USER_PREFIX}/notifications`}
+              element={<NotificationsPage />}
+            />
           </Routes>
         </ProtectedLayout>
       </ProtectedRoute>
@@ -178,18 +244,24 @@ const AppContent = () => {
         <LibrarianLayout>
           <Routes>
             <Route
-              path="/librarian/dashboard"
+              path={`${LIB_PREFIX}/dashboard`}
               element={<LibrarianDashboard />}
             />
-            <Route path="/librarian/circulation" element={<Circulation />} />
-            <Route path="/librarian/books" element={<BookList />} />
-            <Route path="/librarian/books/:id" element={<BookDetails />} />
-            <Route path="/librarian/copies" element={<CopyList />} />
-            <Route path="/librarian/copies/:id" element={<CopyDetails />} />
-            <Route path="/librarian/requests" element={<Requests />} />
-            <Route path="/librarian/settings" element={<Settings />} />
             <Route
-              path="/librarian/notifications"
+              path={`${LIB_PREFIX}/circulation`}
+              element={<Circulation />}
+            />
+            <Route path={`${LIB_PREFIX}/books`} element={<BookList />} />
+            <Route path={`${LIB_PREFIX}/books/:id`} element={<BookDetails />} />
+            <Route path={`${LIB_PREFIX}/copies`} element={<CopyList />} />
+            <Route
+              path={`${LIB_PREFIX}/copies/:id`}
+              element={<CopyDetails />}
+            />
+            <Route path={`${LIB_PREFIX}/requests`} element={<Requests />} />
+            <Route path={`${LIB_PREFIX}/settings`} element={<Settings />} />
+            <Route
+              path={`${LIB_PREFIX}/notifications`}
               element={<Notifications />}
             />
           </Routes>
@@ -202,18 +274,36 @@ const AppContent = () => {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/book/:id" element={<BookDetailPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/guide" element={<UserGuidePage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/service-terms" element={<ServiceTermsPage />} />
-        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path={`${PUBLIC_PREFIX}`} element={<HomePage />} />
+        <Route
+          path={`${PUBLIC_PREFIX}/search`}
+          element={<PublicSearchPage />}
+        />
+        <Route
+          path={`${PUBLIC_PREFIX}/book/:id`}
+          element={<BookDetailPage />}
+        />
+        <Route path={`${PUBLIC_PREFIX}/about`} element={<AboutPage />} />
+        <Route path={`${PUBLIC_PREFIX}/guide`} element={<UserGuidePage />} />
+        <Route path={`${PUBLIC_PREFIX}/faq`} element={<FAQPage />} />
+        <Route path={`${PUBLIC_PREFIX}/contact`} element={<ContactPage />} />
+        <Route path={`${PUBLIC_PREFIX}/terms`} element={<TermsPage />} />
+        <Route
+          path={`${PUBLIC_PREFIX}/categories`}
+          element={<CategoriesPage />}
+        />
+        <Route
+          path={`${PUBLIC_PREFIX}/privacy-policy`}
+          element={<PrivacyPolicyPage />}
+        />
+        <Route
+          path={`${PUBLIC_PREFIX}/service-terms`}
+          element={<ServiceTermsPage />}
+        />
+        <Route
+          path={`${PUBLIC_PREFIX}/cookie-policy`}
+          element={<CookiePolicyPage />}
+        />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </Layout>

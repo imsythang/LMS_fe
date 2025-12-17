@@ -21,7 +21,7 @@ import {
   User,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Badge,
   Button,
@@ -493,7 +493,7 @@ const RelatedBooksTab = () => (
     <div className="flex justify-between items-center mb-6">
       <h3 className="text-xl font-bold text-gray-900">Sách cùng chủ đề</h3>
       <Link
-        to="/search"
+        to="/publicpage/search"
         className="text-sm text-blue-600 hover:underline flex items-center"
       >
         Xem tất cả <ArrowRight size={14} className="ml-1" />
@@ -504,7 +504,7 @@ const RelatedBooksTab = () => (
         title="Deep Learning từ cơ bản đến nâng cao"
         author="Nguyễn Thanh Tuấn"
         rating={4.8}
-        image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+        image="public/avatar/Avatar.JPG"
         tag="Có sẵn"
         status="available"
         color="green"
@@ -513,7 +513,7 @@ const RelatedBooksTab = () => (
         title="Python cho Data Science"
         author="Phạm Đình Khánh"
         rating={4.5}
-        image="https://m.media-amazon.com/images/I/71951W96oWL._AC_UF1000,1000_QL80_.jpg"
+        image="public/avatar/Avatar.JPG"
         tag="Có sẵn"
         status="available"
         color="green"
@@ -522,7 +522,7 @@ const RelatedBooksTab = () => (
         title="Trí tuệ nhân tạo hiện đại"
         author="Trần Minh Quang"
         rating={4.7}
-        image="https://m.media-amazon.com/images/I/81+N4+nK6gL._AC_UF1000,1000_QL80_.jpg"
+        image="public/avatar/Avatar.JPG"
         tag="Đang mượn"
         status="loan"
         color="orange"
@@ -531,7 +531,7 @@ const RelatedBooksTab = () => (
         title="Thống kê cho Machine Learning"
         author="Lê Thị Mai"
         rating={4.4}
-        image="https://m.media-amazon.com/images/I/61MhLhF7LzL._AC_UF1000,1000_QL80_.jpg"
+        image="public/avatar/Avatar.JPG"
         tag="Có sẵn"
         status="available"
         color="green"
@@ -540,7 +540,7 @@ const RelatedBooksTab = () => (
         title="Computer Vision với OpenCV"
         author="Hoàng Văn Nam"
         rating={4.6}
-        image="https://m.media-amazon.com/images/I/71f743sOPoL._AC_UF1000,1000_QL80_.jpg"
+        image="public/avatar/Avatar.JPG"
         tag="Có sẵn"
         status="available"
         color="blue"
@@ -558,7 +558,7 @@ const RelatedBooksTab = () => (
           title="Xử lý ngôn ngữ tự nhiên"
           author="Đặng Thị Hoa"
           rating={4.3}
-          image="https://m.media-amazon.com/images/I/71j2I+b-uDL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
           tag="Có sẵn"
           status="available"
           color="purple"
@@ -567,7 +567,7 @@ const RelatedBooksTab = () => (
           title="Khai phá dữ liệu và ứng dụng"
           author="Ngô Đức Thành"
           rating={4.5}
-          image="https://m.media-amazon.com/images/I/71J19-p3B6L._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
           tag="Có sẵn"
           status="available"
           color="red"
@@ -576,7 +576,7 @@ const RelatedBooksTab = () => (
           title="Reinforcement Learning cơ bản"
           author="Bùi Văn Toàn"
           rating={4.7}
-          image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
           tag="Đang mượn"
           status="loan"
           color="yellow"
@@ -589,6 +589,10 @@ const RelatedBooksTab = () => (
 // --- Main Page Component ---
 
 const BookDetailPage = () => {
+  const location = useLocation();
+  const prefix = location.pathname.startsWith('/userpage')
+    ? '/userpage'
+    : '/publicpage';
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
@@ -596,11 +600,14 @@ const BookDetailPage = () => {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-sm text-gray-500 flex items-center">
-          <Link to="/" className="hover:text-blue-600 cursor-pointer">
+          <Link to={prefix} className="hover:text-blue-600 cursor-pointer">
             Trang chủ
           </Link>
           <ChevronRight size={14} className="mx-2 text-gray-400" />
-          <Link to="/search" className="hover:text-blue-600 cursor-pointer">
+          <Link
+            to={`${prefix}/search`}
+            className="hover:text-blue-600 cursor-pointer"
+          >
             Trí tuệ nhân tạo
           </Link>
           <ChevronRight size={14} className="mx-2 text-gray-400" />
@@ -621,7 +628,7 @@ const BookDetailPage = () => {
                   <CheckCircle size={12} className="mr-1" /> Có sẵn
                 </div>
                 <img
-                  src="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+                  src="public/avatar/Avatar.JPG"
                   alt="Cover"
                   className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
                 />

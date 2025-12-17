@@ -8,7 +8,10 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-3 cursor-pointer">
+          <Link
+            to="/publicpage"
+            className="flex items-center gap-3 cursor-pointer"
+          >
             <div className="bg-primary-600 p-1.5 rounded-lg">
               <BookOpen className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
@@ -25,25 +28,25 @@ const Header: React.FC = () => {
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
-              to="/"
+              to="/publicpage"
               className="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors"
             >
               Trang chủ
             </Link>
             <Link
-              to="/search"
+              to="/publicpage/search"
               className="text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
             >
               Tìm kiếm
             </Link>
             <Link
-              to="/about"
+              to="/publicpage/about"
               className="text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
             >
               Giới thiệu
             </Link>
             <Link
-              to="/categories"
+              to="/publicpage/categories"
               className="relative group cursor-pointer flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors"
             >
               <span>Danh mục</span>
@@ -61,13 +64,13 @@ const Header: React.FC = () => {
             <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
 
             <Link
-              to="/login"
+              to="/publicpage/login"
               className="hidden sm:block text-sm font-medium text-gray-700 hover:text-gray-900 px-2"
             >
               Đăng nhập
             </Link>
             <Link
-              to="/register"
+              to="/publicpage/register"
               className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-colors shadow-sm shadow-primary-500/30"
             >
               Đăng ký

@@ -192,21 +192,31 @@ const MyBooksPage = () => {
           {/* Controls */}
           <div className="bg-white p-4 rounded-lg border border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Lọc:</span>
+              <span className="text-sm font-medium text-gray-600/90">Lọc:</span>
+
               <Badge
                 variant="secondary"
-                className="cursor-pointer bg-gray-800 text-white"
+                className="
+    cursor-pointer
+    bg-blue-600
+    !text-white
+    hover:bg-blue-700
+    transition-colors
+    ring-1 ring-white/20
+  "
               >
                 Tất cả
               </Badge>
+
               <Badge
                 variant="outline"
-                className="cursor-pointer hover:bg-gray-50"
+                className="cursor-pointer border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
               >
                 Chỉ quá hạn
               </Badge>
             </div>
-            <span className="text-sm text-blue-600 cursor-pointer hover:underline">
+
+            <span className="text-sm font-medium text-blue-600 cursor-pointer hover:text-blue-700 hover:underline transition-colors">
               Xóa bộ lọc
             </span>
           </div>
@@ -219,7 +229,7 @@ const MyBooksPage = () => {
               borrowDate="15/11/2024"
               dueDate="05/01/2025"
               status="active"
-              image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+              image="public/avatar/Avatar.JPG"
             />
             <LoanItem
               title="Deep Learning with Python"
@@ -228,7 +238,7 @@ const MyBooksPage = () => {
               dueDate="20/12/2024"
               status="overdue"
               fine="15,000"
-              image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+              image="public/avatar/Avatar.JPG"
             />
             <LoanItem
               title="Python for Data Analysis"
@@ -236,7 +246,7 @@ const MyBooksPage = () => {
               borrowDate="20/11/2024"
               dueDate="10/01/2025"
               status="active"
-              image="https://m.media-amazon.com/images/I/71951W96oWL._AC_UF1000,1000_QL80_.jpg"
+              image="public/avatar/Avatar.JPG"
             />
           </div>
         </>

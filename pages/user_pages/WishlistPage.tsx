@@ -103,7 +103,7 @@ const WishlistPage = () => {
           rating={4.8}
           status="available"
           category="Trí tuệ nhân tạo"
-          image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Deep Learning for Computer Vision"
@@ -111,7 +111,7 @@ const WishlistPage = () => {
           rating={4.9}
           status="available"
           category="Deep Learning"
-          image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Python for Data Analysis"
@@ -119,7 +119,7 @@ const WishlistPage = () => {
           rating={4.7}
           status="available"
           category="Data Science"
-          image="https://m.media-amazon.com/images/I/71951W96oWL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Introduction to Algorithms"
@@ -127,7 +127,7 @@ const WishlistPage = () => {
           rating={4.6}
           status="loaned"
           category="Algorithms"
-          image="https://m.media-amazon.com/images/I/61MhLhF7LzL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Cloud Architecture Patterns"
@@ -135,7 +135,7 @@ const WishlistPage = () => {
           rating={4.5}
           status="available"
           category="Cloud Computing"
-          image="https://m.media-amazon.com/images/I/71f743sOPoL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Clean Code: A Handbook"
@@ -143,7 +143,7 @@ const WishlistPage = () => {
           rating={4.9}
           status="available"
           category="Software Engineering"
-          image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Database System Concepts"
@@ -151,7 +151,7 @@ const WishlistPage = () => {
           rating={4.4}
           status="loaned"
           category="Database"
-          image="https://m.media-amazon.com/images/I/81+N4+nK6gL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <WishlistItem
           title="Network Security Essentials"
@@ -159,7 +159,7 @@ const WishlistPage = () => {
           rating={4.3}
           status="available"
           category="Cybersecurity"
-          image="https://m.media-amazon.com/images/I/71J19-p3B6L._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
       </div>
     </div>

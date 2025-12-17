@@ -1,6 +1,5 @@
 import { ChevronDown, ChevronUp, HelpCircle, Search } from 'lucide-react';
 import React, { useState } from 'react';
-
 const FAQItem = ({
   question,
   answer,
@@ -215,7 +214,9 @@ const FAQPage = () => {
                 </h2>
                 <div className="space-y-3">
                   {category.items.map((item, itemIdx) => (
-                    <FAQItem key={itemIdx} question={item.q} answer={item.a} />
+                    <React.Fragment key={itemIdx}>
+                      <FAQItem question={item.q} answer={item.a} />
+                    </React.Fragment>
                   ))}
                 </div>
               </div>
@@ -239,7 +240,7 @@ const FAQPage = () => {
               Gọi ngay: +84 88 676 5392
             </a>
             <a
-              href="/contact"
+              href="/publicpage/contact"
               className="px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
             >
               Gửi tin nhắn

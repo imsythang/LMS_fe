@@ -18,7 +18,7 @@ export const Header = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/publicpage" className="flex items-center">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white mr-2">
                 <BookOpen size={20} />
               </div>
@@ -35,16 +35,25 @@ export const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className={isActive('/')}>
+            <Link to="/publicpage" className={isActive('/publicpage')}>
               Trang chủ
             </Link>
-            <Link to="/search" className={isActive('/search')}>
+            <Link
+              to="/publicpage/search"
+              className={isActive('/publicpage/search')}
+            >
               Tìm kiếm
             </Link>
-            <Link to="/about" className={isActive('/about')}>
+            <Link
+              to="/publicpage/about"
+              className={isActive('/publicpage/about')}
+            >
               Giới thiệu
             </Link>
-            <Link to="/categories" className={isActive('/categories')}>
+            <Link
+              to="/publicpage/categories"
+              className={isActive('/publicpage/categories')}
+            >
               Danh mục
             </Link>
           </nav>
@@ -56,12 +65,12 @@ export const Header = () => {
               <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
             </button>
             <div className="h-6 w-px bg-gray-300"></div>
-            <Link to="/login">
+            <Link to="/publicpage/login">
               <Button variant="ghost" size="sm">
                 Đăng nhập
               </Button>
             </Link>
-            <Link to="/register">
+            <Link to="/publicpage/register">
               <Button size="sm">Đăng ký</Button>
             </Link>
           </div>
@@ -83,25 +92,25 @@ export const Header = () => {
         <div className="md:hidden border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
-              to="/"
+              to="/publicpage"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
             >
               Trang chủ
             </Link>
             <Link
-              to="/search"
+              to="/publicpage/search"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50"
             >
               Tìm kiếm
             </Link>
             <Link
-              to="/login"
+              to="/publicpage/login"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50"
             >
               Đăng nhập
             </Link>
             <Link
-              to="/register"
+              to="/publicpage/register"
               className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50"
             >
               Đăng ký
@@ -113,7 +122,7 @@ export const Header = () => {
   );
 };
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -136,7 +145,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4 mt-6">
               <a
-                href="https://www.facebook.com/tvdhbkhcm"
+                href="https://www.facebook.com/sgnaht"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-colors"
@@ -151,7 +160,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/sgnaht"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white transition-all"
@@ -179,27 +188,36 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4 text-white">Khám phá</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <Link to="/" className="hover:text-blue-400">
+                <Link to="/publicpage" className="hover:text-blue-400">
                   Trang chủ
                 </Link>
               </li>
               <li>
-                <Link to="/search" className="hover:text-blue-400">
+                <Link to="/publicpage/search" className="hover:text-blue-400">
                   Tìm kiếm
                 </Link>
               </li>
               <li>
-                <Link to="/categories" className="hover:text-blue-400">
+                <Link
+                  to="/publicpage/categories"
+                  className="hover:text-blue-400"
+                >
                   Danh mục
                 </Link>
               </li>
               <li>
-                <Link to="/search?sort=newest" className="hover:text-blue-400">
+                <Link
+                  to="/publicpage/search?sort=newest"
+                  className="hover:text-blue-400"
+                >
                   Sách mới
                 </Link>
               </li>
               <li>
-                <Link to="/search?sort=popular" className="hover:text-blue-400">
+                <Link
+                  to="/publicpage/search?sort=popular"
+                  className="hover:text-blue-400"
+                >
                   Được mượn nhiều
                 </Link>
               </li>
@@ -210,27 +228,27 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4 text-white">Hỗ trợ</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <Link to="/about" className="hover:text-blue-400">
+                <Link to="/publicpage/about" className="hover:text-blue-400">
                   Giới thiệu
                 </Link>
               </li>
               <li>
-                <Link to="/guide" className="hover:text-blue-400">
+                <Link to="/publicpage/guide" className="hover:text-blue-400">
                   Hướng dẫn sử dụng
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="hover:text-blue-400">
+                <Link to="/publicpage/faq" className="hover:text-blue-400">
                   Câu hỏi thường gặp
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-blue-400">
+                <Link to="/publicpage/contact" className="hover:text-blue-400">
                   Liên hệ
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="hover:text-blue-400">
+                <Link to="/publicpage/terms" className="hover:text-blue-400">
                   Điều khoản sử dụng
                 </Link>
               </li>
@@ -270,13 +288,13 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
           <p>© 2025 SmartLibrary. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/privacy-policy" className="hover:text-white">
+            <Link to="/publicpage/privacy-policy" className="hover:text-white">
               Chính sách bảo mật
             </Link>
-            <Link to="/service-terms" className="hover:text-white">
+            <Link to="/publicpage/service-terms" className="hover:text-white">
               Điều khoản dịch vụ
             </Link>
-            <Link to="/cookie-policy" className="hover:text-white">
+            <Link to="/publicpage/cookie-policy" className="hover:text-white">
               Chính sách Cookie
             </Link>
           </div>

@@ -59,7 +59,7 @@ const ForbiddenPage: React.FC = () => {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
-            <Link to="/login">
+            <Link to="/publicpage/login">
               <button className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md shadow-blue-200">
                 <LogIn className="w-4 h-4" />
                 Đăng nhập với tài khoản khác

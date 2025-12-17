@@ -9,7 +9,9 @@ import {
   Mail,
   Phone,
 } from 'lucide-react';
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import { Footer } from '../../components/public_pages/Layout';
 import { Button } from '../../components/user_pages/ui/Button';
 import {
   CURRENT_USER,
@@ -162,13 +164,15 @@ const BookListItem = ({ book }: { book: Book }) => {
           >
             Gia hạn
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-slate-500 border-slate-200 text-[11px] px-3 py-1 h-7 rounded hover:bg-slate-50"
-          >
-            Chi tiết
-          </Button>
+          <Link to={`/userpage/book/${book.id}`}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-slate-500 border-slate-200 text-[11px] px-3 py-1 h-7 rounded hover:bg-slate-50"
+            >
+              Chi tiết
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
@@ -273,180 +277,198 @@ const LibraryHoursCard = ({ campus, address, hours, status }: any) => (
 
 const DashboardPage = () => {
   return (
-    <div className="animate-fade-in space-y-8 max-w-7xl mx-auto pb-10">
-      {/* 1. Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden shadow-lg">
-        <div className="absolute top-0 right-0 w-80 h-full bg-white/10 transform skew-x-12 translate-x-20"></div>
-        <div className="relative z-10">
-          <h1 className="text-2xl font-bold mb-2">
-            Xin chào, {CURRENT_USER.name.split(' ').pop()}! 👋
-          </h1>
-          <p className="text-blue-100 mb-6 text-sm">
-            Hôm nay bạn có <strong className="text-white">2 sách</strong> sắp
-            đến hạn trả.
-          </p>
-          <div className="flex gap-3">
-            {/* 1. Nút Primary: Nổi bật, hiệu ứng nâng lên khi hover */}
-            <Link to="/my-books">
-              <Button
-                className="
-        bg-white text-indigo-600
-        font-bold text-xs px-6 py-2.5
-        rounded-full shadow-lg shadow-indigo-900/20
-        transform transition-all duration-300
-        hover:-translate-y-1 hover:shadow-xl hover:bg-indigo-50
-        border-none
-      "
-              >
-                Xem ngay
-              </Button>
-            </Link>
-
-            {/* 2. Nút Secondary: Hiệu ứng kính (Glassmorphism), mờ ảo tinh tế */}
-            <Button
-              variant="outline"
-              className="
-      bg-white/10 backdrop-blur-sm
-      text-white border-white/20
-      font-medium text-xs px-6 py-2.5
-      rounded-full
-      transition-all duration-300
-      hover:bg-white/20 hover:border-white/50 hover:text-white
-    "
-            >
-              Gia hạn tất cả
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Key Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {DASHBOARD_STATS.map((stat, index) => (
-          <StatCard key={index} stat={stat} />
-        ))}
-      </div>
-
-      {/* 3. Due Books Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-slate-800">
-              Sách sắp đến hạn
-            </h3>
-            <p className="text-xs text-slate-500">
-              Danh sách các sách cần trả sớm nhất
+    <>
+      <div className="animate-fade-in space-y-8 max-w-7xl mx-auto pb-10">
+        {/* 1. Welcome Banner */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-80 h-full bg-white/10 transform skew-x-12 translate-x-20"></div>
+          <div className="relative z-10">
+            <h1 className="text-2xl font-bold mb-2">
+              Xin chào, {CURRENT_USER.name.split(' ').pop()}! 👋
+            </h1>
+            <p className="text-blue-100 mb-6 text-sm">
+              Hôm nay bạn có <strong className="text-white">2 sách</strong> sắp
+              đến hạn trả.
             </p>
+            <div className="flex gap-3">
+              <Link to="/userpage/my-books">
+                <Button
+                  variant="outline"
+                  className="
+        bg-white
+        text-blue-800
+        border border-white/80
+        text-xs font-semibold
+        px-5 py-2
+        shadow-sm
+        transition-all duration-200
+        hover:bg-emerald-50
+        hover:text-emerald-700
+        hover:shadow-md
+        hover:-translate-y-[1px]
+      "
+                >
+                  Xem ngay
+                </Button>
+              </Link>
+
+              <Button
+                variant="outline"
+                className="
+      bg-white
+        text-blue-800
+        border border-white/80
+        text-xs font-semibold
+        px-5 py-2
+        shadow-sm
+        transition-all duration-200
+        hover:bg-emerald-50
+        hover:text-emerald-700
+        hover:shadow-md
+        hover:-translate-y-[1px]
+    "
+              >
+                Gia hạn tất cả
+              </Button>
+            </div>
           </div>
-          <Link
-            to="/my-books"
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center hover:underline"
-          >
-            Xem tất cả <ArrowRight size={12} className="ml-1" />
-          </Link>
         </div>
 
-        <div className="flex flex-col gap-3">
-          {DUE_BOOKS.map((book) => (
-            <BookListItem key={book.id} book={book} />
+        {/* 2. Key Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {DASHBOARD_STATS.map((stat, index) => (
+            <Fragment key={index}>
+              <StatCard stat={stat} />
+            </Fragment>
           ))}
         </div>
-      </div>
 
-      {/* 4. Recommendations Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Info size={18} className="text-blue-500" /> Gợi ý cho bạn
-            </h3>
-            <p className="text-xs text-slate-500">
-              Dựa trên môn học và sở thích đọc của bạn
-            </p>
+        {/* 3. Due Books Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">
+                Sách sắp đến hạn
+              </h3>
+              <p className="text-xs text-slate-500">
+                Danh sách các sách cần trả sớm nhất
+              </p>
+            </div>
+            <Link
+              to="/userpage/my-books"
+              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center hover:underline"
+            >
+              Xem tất cả <ArrowRight size={12} className="ml-1" />
+            </Link>
           </div>
-          <Link
-            to="/search"
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center hover:underline"
-          >
-            Xem thêm gợi ý <ArrowRight size={12} className="ml-1" />
-          </Link>
-        </div>
 
-        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex gap-4 overflow-x-auto pb-6 pt-2 scrollbar-hide snap-x">
-            {RECOMMENDATIONS.map((book) => (
-              <RecommendationCard key={book.id} book={book} />
+          <div className="flex flex-col gap-3">
+            {DUE_BOOKS.map((book) => (
+              <Fragment key={book.id}>
+                <BookListItem book={book} />
+              </Fragment>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* 5. Footer Info (Hours & Support) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col md:flex-row gap-4">
-          <LibraryHoursCard
-            campus="Cơ sở 1"
-            address="Cơ sở 1: 268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh"
-            hours={[
-              { days: 'Thứ Hai - Thứ Sáu', time: '07:30 - 20:00' },
-              { days: 'Thứ Bảy', time: '07:30 - 17:00' },
-              { days: 'Chủ Nhật', time: 'ĐÓNG CỬA' },
-            ]}
-            status="Đang mở cửa"
-          />
-          <LibraryHoursCard
-            campus="Cơ sở 2"
-            address="Cơ sở 2: Khu phố Tân Lập, Phường Đông Hòa, Thành phố Dĩ An, Tỉnh Bình Dương"
-            hours={[
-              {
-                days: 'Thứ Hai - Thứ Sáu',
-                time: 'Sáng: 7:30 - 11:30 | Chiều: 13:00 - 17:00',
-              },
-              { days: 'Thứ Bảy - Chủ Nhật', time: 'ĐÓNG CỬA' },
-            ]}
-            status="Đang mở cửa"
-          />
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-center">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
-              <Phone size={20} />
-            </div>
+        {/* 4. Recommendations Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-900">Liên hệ hỗ trợ</h3>
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Info size={18} className="text-blue-500" /> Gợi ý cho bạn
+              </h3>
               <p className="text-xs text-slate-500">
-                Chúng tôi luôn sẵn sàng giúp đỡ
+                Dựa trên môn học và sở thích đọc của bạn
               </p>
             </div>
+            <Link
+              to="/userpage/search"
+              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center hover:underline"
+            >
+              Xem thêm gợi ý <ArrowRight size={12} className="ml-1" />
+            </Link>
           </div>
 
-          <div className="space-y-3">
-            <a
-              href="mailto:thang.hokhmtk22@hcmut.edu.vn"
-              className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-            >
-              <Mail size={16} className="text-slate-400 mt-0.5" />
+          <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 scrollbar-hide snap-x">
+              {RECOMMENDATIONS.map((book) => (
+                <Fragment key={book.id}>
+                  <RecommendationCard book={book} />
+                </Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Footer Info (Hours & Support) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 flex flex-col md:flex-row gap-4">
+            <LibraryHoursCard
+              campus="Cơ sở 1"
+              address="Cơ sở 1: 268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh"
+              hours={[
+                { days: 'Thứ Hai - Thứ Sáu', time: '07:30 - 20:00' },
+                { days: 'Thứ Bảy', time: '07:30 - 17:00' },
+                { days: 'Chủ Nhật', time: 'ĐÓNG CỬA' },
+              ]}
+              status="Đang mở cửa"
+            />
+            <LibraryHoursCard
+              campus="Cơ sở 2"
+              address="Cơ sở 2: Khu phố Tân Lập, Phường Đông Hòa, Thành phố Dĩ An, Tỉnh Bình Dương"
+              hours={[
+                {
+                  days: 'Thứ Hai - Thứ Sáu',
+                  time: 'Sáng: 7:30 - 11:30 | Chiều: 13:00 - 17:00',
+                },
+                { days: 'Thứ Bảy - Chủ Nhật', time: 'ĐÓNG CỬA' },
+              ]}
+              status="Đang mở cửa"
+            />
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                <Phone size={20} />
+              </div>
               <div>
-                <p className="text-xs text-slate-500">Email</p>
-                <p className="text-sm font-bold text-slate-800">
-                  thang.hokhmtk22@hcmut.edu.vn
+                <h3 className="font-bold text-slate-900">Liên hệ hỗ trợ</h3>
+                <p className="text-xs text-slate-500">
+                  Chúng tôi luôn sẵn sàng giúp đỡ
                 </p>
               </div>
-            </a>
-            <div className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
-              <Phone size={16} className="text-slate-400 mt-0.5" />
-              <div>
-                <p className="text-xs text-slate-500">Điện thoại</p>
-                <p className="text-sm font-bold text-slate-800">
-                  (+84) 88 676 5392
-                </p>
+            </div>
+
+            <div className="space-y-3">
+              <a
+                href="mailto:thang.hokhmtk22@hcmut.edu.vn"
+                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+              >
+                <Mail size={16} className="text-slate-400 mt-0.5" />
+                <div>
+                  <p className="text-xs text-slate-500">Email</p>
+                  <p className="text-sm font-bold text-slate-800">
+                    thang.hokhmtk22@hcmut.edu.vn
+                  </p>
+                </div>
+              </a>
+              <div className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
+                <Phone size={16} className="text-slate-400 mt-0.5" />
+                <div>
+                  <p className="text-xs text-slate-500">Điện thoại</p>
+                  <p className="text-sm font-bold text-slate-800">
+                    (+84) 88 676 5392
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

@@ -80,7 +80,7 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
       `}
       >
         <div className="h-16 flex items-center px-6 border-b border-gray-100 flex-shrink-0">
-          <Link to="/dashboard" className="flex items-center">
+          <Link to="/userpage/dashboard" className="flex items-center">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white mr-2">
               <BookOpen size={20} />
             </div>
@@ -100,13 +100,13 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             Tổng quan
           </div>
           <SidebarItem
-            to="/dashboard"
+            to="/userpage/dashboard"
             icon={LayoutDashboard}
             label="Dashboard"
             active={isActive('/dashboard')}
           />
           <SidebarItem
-            to="/search"
+            to="/userpage/search"
             icon={Search}
             label="Tìm kiếm sách"
             active={isActive('/search')}
@@ -116,28 +116,28 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             Quản lý cá nhân
           </div>
           <SidebarItem
-            to="/my-books"
+            to="/userpage/my-books"
             icon={Book}
             label="Sách đang mượn"
             count={3}
             active={isActive('/my-books')}
           />
           <SidebarItem
-            to="/reservations"
+            to="/userpage/reservations"
             icon={Clock}
             label="Đặt trước"
             count={2}
             active={isActive('/reservations')}
           />
           <SidebarItem
-            to="/wishlist"
+            to="/userpage/wishlist"
             icon={Heart}
             label="Yêu thích"
             count={8}
             active={isActive('/wishlist')}
           />
           <SidebarItem
-            to="/fines"
+            to="/userpage/fines"
             icon={DollarSign}
             label="Phí phạt"
             active={isActive('/fines')}
@@ -146,13 +146,13 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             Cài đặt
           </div>
           <SidebarItem
-            to="/profile"
+            to="/userpage/profile"
             icon={User}
             label="Thông tin cá nhân"
             active={isActive('/profile')}
           />
           <SidebarItem
-            to="/settings"
+            to="/userpage/settings"
             icon={Settings}
             label="Cài đặt"
             active={isActive('/settings')}
@@ -218,7 +218,7 @@ export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
             <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
 
             <Link
-              to="/notifications"
+              to="/userpage/notifications"
               className="p-2 text-gray-400 hover:text-gray-600 relative rounded-full hover:bg-gray-100 transition-colors"
             >
               <Bell size={20} />

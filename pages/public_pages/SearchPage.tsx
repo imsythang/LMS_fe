@@ -8,13 +8,24 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { Badge, Button } from '../../components/ui';
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefix = useMemo(
+    () =>
+      location.pathname.startsWith('/userpage') ? '/userpage' : '/publicpage',
+    [location.pathname]
+  );
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [sortBy, setSortBy] = useState<string>(() => {
     const sort = searchParams.get('sort');
@@ -40,7 +51,7 @@ const SearchPage = () => {
     } else {
       newParams.set('sort', value);
     }
-    navigate(`/search?${newParams.toString()}`, { replace: true });
+    navigate(`${prefix}/search?${newParams.toString()}`, { replace: true });
   };
 
   return (
@@ -335,7 +346,7 @@ const SearchPage = () => {
                 author="Nguyễn Văn An, Trần Thị Bình"
                 year="2023"
                 publisher="NXB Đại học Quốc gia"
-                image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+                image="public/avatar/Avatar.JPG"
                 tags={['Trí tuệ nhân tạo', 'Machine Learning', 'Python']}
                 desc="Cuốn sách cung cấp kiến thức nền tảng về Machine Learning với các thuật toán phổ biến như Linear Regression, Decision Trees, Neural Networks. Bao gồm code mẫu Python và bài tập thực hành chi tiết."
                 availability={{
@@ -343,25 +354,25 @@ const SearchPage = () => {
                   available: 8,
                   nextReturn: '15/01/2026',
                 }}
-                link="/book/1"
+                link={`${prefix}/book/1`}
               />
               <SearchResultCard
                 title="Nhập Môn Machine Learning và Deep Learning"
                 author="Lê Minh Hoàng"
                 year="2022"
                 publisher="NXB Thông tin và Truyền thông"
-                image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+                image="public/avatar/Avatar.JPG"
                 tags={['AI/ML', 'Deep Learning', 'Beginner']}
                 desc="Tài liệu dành cho sinh viên năm 3-4 ngành CNTT, giới thiệu các khái niệm cơ bản về ML, DL và ứng dụng thực tế. Có phần hướng dẫn sử dụng TensorFlow và Keras."
                 availability={{ total: 8, available: 5, ebook: true }}
-                link="/book/2"
+                link={`${prefix}/book/2`}
               />
               <SearchResultCard
                 title="Python cho Machine Learning: Hướng Dẫn Toàn Diện"
                 author="Phạm Đức Cường, Võ Thị Diệu"
                 year="2021"
                 publisher="NXB Khoa học Kỹ thuật"
-                image="https://m.media-amazon.com/images/I/71951W96oWL._AC_UF1000,1000_QL80_.jpg"
+                image="public/avatar/Avatar.JPG"
                 tags={['Python', 'Machine Learning', 'Scikit-learn']}
                 desc="Sách tập trung vào việc triển khai các thuật toán ML bằng Python và thư viện Scikit-learn. Bao gồm 50+ ví dụ thực tế và dự án mini hoàn chỉnh."
                 availability={{
@@ -369,18 +380,18 @@ const SearchPage = () => {
                   available: 0,
                   nextReturn: '08/01/2026',
                 }}
-                link="/book/3"
+                link={`${prefix}/book/3`}
               />
               <SearchResultCard
                 title="Khoa Học Dữ Liệu và Machine Learning Cơ Bản"
                 author="Hoàng Văn Khánh"
                 year="2023"
                 publisher="NXB Giáo dục Việt Nam"
-                image="https://m.media-amazon.com/images/I/61MhLhF7LzL._AC_UF1000,1000_QL80_.jpg"
+                image="public/avatar/Avatar.JPG"
                 tags={['Data Science', 'Machine Learning', 'Statistics']}
                 desc="Giáo trình chính thức cho sinh viên đại học, kết hợp kiến thức thống kê, xử lý dữ liệu và machine learning. Có bài tập và đề thi mẫu kèm theo."
                 availability={{ total: 15, available: 12, ebook: true }}
-                link="/book/4"
+                link={`${prefix}/book/4`}
               />
             </div>
 

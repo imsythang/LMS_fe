@@ -158,7 +158,7 @@ const RegisterPage = () => {
                 <p className="text-sm text-gray-600">
                   Đã có tài khoản?{' '}
                   <Link
-                    to="/login"
+                    to="/publicpage/login"
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
                     Đăng nhập ngay

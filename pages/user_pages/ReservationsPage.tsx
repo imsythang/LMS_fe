@@ -120,7 +120,7 @@ const ReservationsPage = () => {
           location="Thư viện cơ sở 2"
           position="2 / 5"
           status="waiting"
-          image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <ReservationItem
           title="Python cho người mới bắt đầu"
@@ -129,7 +129,7 @@ const ReservationsPage = () => {
           location="Thư viện cơ sở B"
           expiry="28/12/2025"
           status="ready"
-          image="https://m.media-amazon.com/images/I/71951W96oWL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <ReservationItem
           title="Data Science thực chiến"
@@ -138,7 +138,7 @@ const ReservationsPage = () => {
           location="Thư viện cơ sở A"
           position="1 / 3"
           status="waiting"
-          image="https://m.media-amazon.com/images/I/61MhLhF7LzL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <ReservationItem
           title="Trí tuệ nhân tạo ứng dụng"
@@ -147,7 +147,7 @@ const ReservationsPage = () => {
           location="Thư viện cơ sở B"
           expiry="26/12/2025"
           status="ready"
-          image="https://m.media-amazon.com/images/I/81+N4+nK6gL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
         <ReservationItem
           title="Deep Learning từ A-Z"
@@ -156,7 +156,7 @@ const ReservationsPage = () => {
           location="Thư viện cơ sở A"
           position="3 / 7"
           status="waiting"
-          image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+          image="public/avatar/Avatar.JPG"
         />
       </div>
 

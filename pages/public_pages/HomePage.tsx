@@ -82,7 +82,7 @@ const HeroSection = () => {
 
             <div className="flex items-center space-x-6 text-sm font-medium pt-2">
               <Link
-                to="/search?sort=newest"
+                to="/publicpage/search?sort=newest"
                 className="text-blue-600 hover:text-blue-800 flex items-center group"
               >
                 Xem tất cả sách mới{' '}
@@ -225,7 +225,7 @@ const BookCard = ({
     </div>
     <div className="p-4 flex flex-col flex-grow">
       <h3 className="font-bold text-gray-900 line-clamp-2 text-base mb-1 leading-snug group-hover:text-blue-600 transition-colors">
-        <Link to="/book/1">{title}</Link>
+        <Link to="/publicpage/book/1">{title}</Link>
       </h3>
       <p className="text-xs text-gray-500 mb-3 truncate">{author}</p>
 
@@ -234,7 +234,7 @@ const BookCard = ({
           <StarRating rating={rating} size={14} />
           <span className="text-[10px] text-gray-400 ml-1">({reviews})</span>
         </div>
-        <Link to="/book/1">
+        <Link to="/publicpage/book/1">
           <Button
             size="sm"
             variant="ghost"
@@ -293,7 +293,7 @@ const TrendingItem = ({
         </Badge>
       </div>
       <h3 className="font-bold text-gray-900 text-sm mb-1 truncate pr-2 group-hover:text-blue-600">
-        <Link to="/book/1">{title}</Link>
+        <Link to="/publicpage/book/1">{title}</Link>
       </h3>
       <p className="text-xs text-gray-500 mb-2">{author}</p>
       <div className="flex items-center space-x-3 text-xs text-gray-500 mb-2">
@@ -309,7 +309,7 @@ const TrendingItem = ({
     </div>
     <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
       <Link
-        to="/book/1"
+        to="/publicpage/book/1"
         className="text-xs font-bold text-blue-600 hover:underline"
       >
         Xem chi tiết
@@ -397,7 +397,7 @@ const HomePage = () => {
             </p>
           </div>
           <Link
-            to="/search"
+            to="/publicpage/search"
             className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center group"
           >
             Xem tất cả{' '}
@@ -415,7 +415,7 @@ const HomePage = () => {
             rating={4.5}
             reviews={124}
             available={3}
-            image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+            image="books/machine-learning-co-ban.webp"
             tag="Trí tuệ nhân tạo"
             color="blue"
           />
@@ -435,7 +435,7 @@ const HomePage = () => {
             rating={4.2}
             reviews={67}
             available={1}
-            image="https://m.media-amazon.com/images/I/61MhLhF7LzL._AC_UF1000,1000_QL80_.jpg"
+            image="books/cau-truc-du-lieu-va-giai-thuat.jpg"
             tag="Thuật toán"
             color="orange"
           />
@@ -445,7 +445,7 @@ const HomePage = () => {
             rating={4.7}
             reviews={156}
             available={4}
-            image="https://m.media-amazon.com/images/I/61q3Kk+yRSL._AC_UF1000,1000_QL80_.jpg"
+            image="books/neural-networks-and-deep-learning.webp"
             tag="Deep Learning"
             color="purple"
           />
@@ -455,7 +455,7 @@ const HomePage = () => {
             rating={4.9}
             reviews={298}
             available={2}
-            image="https://m.media-amazon.com/images/I/81+N4+nK6gL._AC_UF1000,1000_QL80_.jpg"
+            image="books/artificial-intelligence-a-modern-approach.jpg"
             tag="Trending"
             color="red"
           />
@@ -552,7 +552,7 @@ const HomePage = () => {
               title="Sách mới"
               subtitle="Mới cập nhật"
               linkText="Xem tất cả"
-              linkUrl="/search?sort=newest"
+              linkUrl="/publicpage/search?sort=newest"
             />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <BookCard
@@ -561,7 +561,7 @@ const HomePage = () => {
                 rating={4.5}
                 reviews={12}
                 available={5}
-                image="https://m.media-amazon.com/images/I/71J19-p3B6L._AC_UF1000,1000_QL80_.jpg"
+                image="books/blockchain-and-crypto.jpeg"
                 tag="MỚI"
                 color="green"
               />
@@ -571,7 +571,7 @@ const HomePage = () => {
                 rating={5.0}
                 reviews={3}
                 available={3}
-                image="https://m.media-amazon.com/images/I/71j2I+b-uDL._AC_UF1000,1000_QL80_.jpg"
+                image="books/quantum-computing.jpg"
                 tag="MỚI"
                 color="green"
               />
@@ -591,7 +591,7 @@ const HomePage = () => {
                 rating={4.6}
                 reviews={24}
                 available={6}
-                image="https://m.media-amazon.com/images/I/61f5XjIRWHL._AC_UF1000,1000_QL80_.jpg"
+                image="books/cloud-computing.jpeg"
                 tag="MỚI"
                 color="green"
               />
@@ -604,7 +604,7 @@ const HomePage = () => {
               title="Được mượn nhiều"
               subtitle="Xu hướng"
               linkText="Xem tất cả"
-              linkUrl="/search?sort=popular"
+              linkUrl="/publicpage/search?sort=popular"
             />
             <div className="space-y-4">
               <TrendingItem
@@ -719,7 +719,20 @@ const HomePage = () => {
             <div className="relative z-10 mt-8 md:mt-0 flex-shrink-0">
               <Button
                 size="lg"
-                className="bg-white text-blue-700 hover:bg-gray-100 font-bold px-8 shadow-lg"
+                variant="outline"
+                className="
+        bg-white
+        text-blue-800
+        border border-white/80
+        text-xs font-semibold
+        px-5 py-2
+        shadow-sm
+        transition-all duration-200
+        hover:bg-emerald-50
+        hover:text-emerald-700
+        hover:shadow-md
+        hover:-translate-y-[1px]
+      "
               >
                 Đăng ký miễn phí <ArrowRight size={18} className="ml-2" />
               </Button>
@@ -822,14 +835,39 @@ const HomePage = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               size="lg"
-              className="bg-white text-blue-700 hover:bg-gray-100 font-bold px-10"
+              variant="outline"
+              className="
+        bg-white
+        text-blue-800
+        border border-white/80
+        text-xs font-semibold
+        px-5 py-2
+        shadow-sm
+        transition-all duration-200
+        hover:bg-emerald-50
+        hover:text-emerald-700
+        hover:shadow-md
+        hover:-translate-y-[1px]
+      "
             >
               Đăng ký miễn phí
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/10 px-10"
+              className="
+        bg-white
+        text-blue-800
+        border border-white/80
+        text-xs font-semibold
+        px-5 py-2
+        shadow-sm
+        transition-all duration-200
+        hover:bg-emerald-50
+        hover:text-emerald-700
+        hover:shadow-md
+        hover:-translate-y-[1px]
+      "
             >
               Khám phá ngay
             </Button>
